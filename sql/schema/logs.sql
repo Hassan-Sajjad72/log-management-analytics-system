@@ -8,6 +8,6 @@ CREATE TABLE logs (
     error_category_id INT REFERENCES error_categories(error_category_id),
     message TEXT,
     response_time_ms INT,
-    ip_address VARCHAR(50),
+    ip_address INET,
     created_at TIMESTAMP
 );

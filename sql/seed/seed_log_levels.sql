@@ -1,0 +1,10 @@
+INSERT INTO log_levels (level_name) VALUES
+('DEBUG'),
+('INFO'),
+('WARNING'),
+('ERROR'),
+('CRITICAL'),
+('TRACE'),
+('NOTICE'),
+('ALERT'),
+('EMERGENCY');
