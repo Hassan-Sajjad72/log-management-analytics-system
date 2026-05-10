@@ -31,6 +31,6 @@ These are many-to-one relationships from `logs` to each reference table; `logs` 
 
 ## ERD image
 
-Included an ERD image in `docs/images/erd.svg`
+Included an ERD image from `docs/images/erd.svg`
 
 ![ERD](images/erd.svg)
