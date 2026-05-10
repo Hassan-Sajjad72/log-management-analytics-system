@@ -1,0 +1,99 @@
+import random
+from datetime import datetime, timedelta
+
+from faker import Faker
+import psycopg2
+from psycopg2.extras import execute_batch
+
+# this creates faker object which generates:
+# - fake ips
+# - fake messages
+# - fake usernames
+fake = Faker()
+
+# this connnects to the database
+connection = psycopg2.connect(
+    host="localhost",
+    database="log_management",
+    user="postgres",
+    password="bisma",
+    port=5432
+)
+
+# create cursor which helps us to execute sql queries
+cursor = connection.cursor()
+
+# fetch IDs from services table
+cursor.execute("SELECT service_id FROM services")
+service_ids = [row[0] for row in cursor.fetchall()]
+
+# fetch IDs from log_levels table
+cursor.execute("SELECT log_level_id FROM log_levels")
+log_level_ids = [row[0] for row in cursor.fetchall()]
+
+# fetch IDs from error_categories table
+cursor.execute("SELECT error_category_id FROM error_categories")
+error_category_ids = [row[0] for row in cursor.fetchall()]
+
+# fetch IDs from users table
+cursor.execute("SELECT user_id FROM users")
+user_ids = [row[0] for row in cursor.fetchall()]
+
+# fetch IDs from api_endpoints table
+cursor.execute("SELECT endpoint_id FROM api_endpoints")
+endpoint_ids = [row[0] for row in cursor.fetchall()]
+
+# fetch IDs from servers table
+cursor.execute("SELECT server_id FROM servers")
+server_ids = [row[0] for row in cursor.fetchall()]
+
+batch_size = 5000
+total_logs = 1000000
+
+# generate log data
+def generate_log():
+    return (
+        random.choice(service_ids),
+        random.choice(log_level_ids),
+        random.choice(error_category_ids),
+        random.choice(user_ids),
+        random.choice(endpoint_ids),
+        random.choice(server_ids),
+        fake.sentence(),
+        random.randint(50, 5000),
+        fake.ipv4(),
+        random.randint(200, 500),
+        fake.date_time_between(
+            start_date='-90d',
+            end_date='now'
+        )
+    )
+
+# insert query
+insert_query = """
+INSERT INTO logs (
+    service_id,
+    log_level_id,
+    error_category_id,
+    user_id,
+    endpoint_id,
+    server_id,
+    message,
+    response_time_ms,
+    ip_address,
+    status_code,
+    created_at
+) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+"""
+
+# generate many logs
+logs = []
+for i in range(0, total_logs, batch_size):
+    batch = [generate_log() for _ in range(batch_size)]
+    execute_batch(cursor, insert_query, batch)
+    connection.commit()
+    print(f"Inserted {i + batch_size} logs")
+
+# close connection
+cursor.close()
+connection.close()

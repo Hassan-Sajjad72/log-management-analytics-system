@@ -9,5 +9,6 @@ CREATE TABLE logs (
     message TEXT,
     response_time_ms INT,
     ip_address INET,
+    status_code INT,
     created_at TIMESTAMP
 );
