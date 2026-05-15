@@ -9,7 +9,7 @@ CREATE TABLE users (
 
 CREATE TABLE services (
     service_id SERIAL PRIMARY KEY,
-    service_name VARCHAR(255) NOT NULL,
+    service_name VARCHAR(255) NOT NULL UNIQUE,
     owner_team VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -26,15 +26,16 @@ CREATE TABLE error_categories (
 
 CREATE TABLE servers (
     server_id SERIAL PRIMARY KEY,
-    server_name VARCHAR(255) NOT NULL,
+    server_name VARCHAR(255) NOT NULL UNIQUE,
     region VARCHAR(255),
     operating_system VARCHAR(255)
 );
 
 CREATE TABLE api_endpoints (
     endpoint_id SERIAL PRIMARY KEY,
-    endpoint_path VARCHAR(255),
-    request_type VARCHAR(20)
+    endpoint_path VARCHAR(255) NOT NULL,
+    request_type VARCHAR(20) NOT NULL,
+    UNIQUE(endpoint_path, request_type)
 );
 
 CREATE TABLE logs (
