@@ -1,7 +1,6 @@
 import random
 import os
 import uuid
-from datetime import datetime, timedelta
 
 from dotenv import load_dotenv
 from faker import Faker
@@ -93,11 +92,10 @@ INSERT INTO logs (
     ip_address,
     status_code,
     created_at
-) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
 """
 
 # generate many logs
-logs = []
 for i in range(0, total_logs, batch_size):
     batch = [generate_log() for _ in range(batch_size)]
     execute_batch(cursor, insert_query, batch)
