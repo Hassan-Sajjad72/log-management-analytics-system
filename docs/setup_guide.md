@@ -46,15 +46,10 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 psql -h localhost -U postgres -d log_management -f sql/schema/00_create_all_tables.sql
 ```
 
-2. Seed reference tables:
+2. Seed reference tables with the master seed file:
 
 ```powershell
-psql -h localhost -U postgres -d log_management -f sql/seed/seed_services.sql
-psql -h localhost -U postgres -d log_management -f sql/seed/seed_servers.sql
-psql -h localhost -U postgres -d log_management -f sql/seed/seed_log_levels.sql
-psql -h localhost -U postgres -d log_management -f sql/seed/seed_error_categories.sql
-psql -h localhost -U postgres -d log_management -f sql/seed/seed_servers.sql
-psql -h localhost -U postgres -d log_management -f sql/seed/seed_api_endpoints.sql
+psql -h localhost -U postgres -d log_management -f sql/seed/00_seed_all.sql
 ```
 
 3. Generate logs from the project root, with venv activated:
