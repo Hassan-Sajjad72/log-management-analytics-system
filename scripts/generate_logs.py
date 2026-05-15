@@ -1,5 +1,6 @@
 import random
 import os
+import uuid
 from datetime import datetime, timedelta
 
 from dotenv import load_dotenv
@@ -58,6 +59,7 @@ total_logs = int(os.getenv("TOTAL_LOGS", 1000000))
 # generate log data
 def generate_log():
     return (
+        str(uuid.uuid4()),
         random.choice(service_ids),
         random.choice(log_level_ids),
         random.choice(error_category_ids),
@@ -65,6 +67,7 @@ def generate_log():
         random.choice(endpoint_ids),
         random.choice(server_ids),
         fake.sentence(),
+        random.choice(["GET", "POST", "PUT", "DELETE"]),
         random.randint(50, 5000),
         fake.ipv4(),
         random.randint(200, 500),
@@ -77,6 +80,7 @@ def generate_log():
 # insert query
 insert_query = """
 INSERT INTO logs (
+    request_id,
     service_id,
     log_level_id,
     error_category_id,
@@ -84,6 +88,7 @@ INSERT INTO logs (
     endpoint_id,
     server_id,
     message,
+    method,
     response_time_ms,
     ip_address,
     status_code,
