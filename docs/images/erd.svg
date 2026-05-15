@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1100" viewBox="0 0 1500 1100">
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1120" viewBox="0 0 1600 1120">
   <style>
-    .table { fill:#ffffff; stroke:#222; stroke-width:1.2; }
-    .header { fill:#2b6cb0; color:#fff; font-weight:700; }
-    .header-rect { fill:#2b6cb0; }
+    .table { fill:#ffffff; stroke:#1f2937; stroke-width:1.2; }
+    .header-rect { fill:#2563eb; }
     .title { font-family: Arial, Helvetica, sans-serif; font-size:14px; fill:#fff; font-weight:700; }
-    .col { font-family: Arial, Helvetica, sans-serif; font-size:12px; fill:#111; }
-    .meta { font-family: Arial, Helvetica, sans-serif; font-size:11px; fill:#444; }
-    .rel { stroke:#444; stroke-width:1.4; fill:none; }
+    .col { font-family: Arial, Helvetica, sans-serif; font-size:12px; fill:#111827; }
+    .meta { font-family: Arial, Helvetica, sans-serif; font-size:11px; fill:#4b5563; }
+    .rel { stroke:#374151; stroke-width:1.4; fill:none; }
     .fk { stroke-dasharray:6 3; }
     .pk { font-weight:700; }
   </style>
@@ -17,121 +16,110 @@
     <rect class="table" width="320" height="116" rx="8" />
     <rect class="header-rect" width="320" height="30" rx="8"/>
     <text x="14" y="20" class="title">services</text>
-    <text x="14" y="48" class="col"><tspan class="pk">service_id</tspan> : INT (PK)</text>
-    <text x="14" y="68" class="col">name : TEXT</text>
-    <text x="14" y="88" class="col">description : TEXT</text>
+    <text x="14" y="48" class="col"><tspan class="pk">service_id</tspan> : SERIAL (PK)</text>
+    <text x="14" y="68" class="col">service_name : VARCHAR</text>
+    <text x="14" y="88" class="col">owner_team : VARCHAR</text>
+    <text x="14" y="108" class="col">created_at : TIMESTAMP</text>
   </g>
 
   <!-- servers -->
   <g transform="translate(420,40)">
-    <rect class="table" width="320" height="96" rx="8" />
+    <rect class="table" width="320" height="116" rx="8" />
     <rect class="header-rect" width="320" height="30" rx="8"/>
     <text x="14" y="20" class="title">servers</text>
-    <text x="14" y="48" class="col"><tspan class="pk">server_id</tspan> : INT (PK)</text>
-    <text x="14" y="68" class="col">hostname : TEXT</text>
-    <text x="14" y="88" class="col">ip : INET</text>
+    <text x="14" y="48" class="col"><tspan class="pk">server_id</tspan> : SERIAL (PK)</text>
+    <text x="14" y="68" class="col">server_name : VARCHAR</text>
+    <text x="14" y="88" class="col">region : VARCHAR</text>
+    <text x="14" y="108" class="col">operating_system : VARCHAR</text>
   </g>
 
   <!-- users -->
   <g transform="translate(800,40)">
-    <rect class="table" width="320" height="96" rx="8" />
+    <rect class="table" width="320" height="116" rx="8" />
     <rect class="header-rect" width="320" height="30" rx="8"/>
     <text x="14" y="20" class="title">users</text>
-    <text x="14" y="48" class="col"><tspan class="pk">user_id</tspan> : INT (PK)</text>
-    <text x="14" y="68" class="col">username : TEXT</text>
-    <text x="14" y="88" class="col">role : TEXT</text>
+    <text x="14" y="48" class="col"><tspan class="pk">user_id</tspan> : SERIAL (PK)</text>
+    <text x="14" y="68" class="col">username : VARCHAR</text>
+    <text x="14" y="88" class="col">email : VARCHAR</text>
+    <text x="14" y="108" class="col">created_at : TIMESTAMP</text>
   </g>
 
   <!-- api_endpoints -->
-  <g transform="translate(40,200)">
+  <g transform="translate(40,210)">
     <rect class="table" width="320" height="96" rx="8" />
     <rect class="header-rect" width="320" height="30" rx="8"/>
     <text x="14" y="20" class="title">api_endpoints</text>
-    <text x="14" y="48" class="col"><tspan class="pk">endpoint_id</tspan> : INT (PK)</text>
-    <text x="14" y="68" class="col">path : TEXT</text>
-    <text x="14" y="88" class="col">method : TEXT</text>
+    <text x="14" y="48" class="col"><tspan class="pk">endpoint_id</tspan> : SERIAL (PK)</text>
+    <text x="14" y="68" class="col">endpoint_path : VARCHAR</text>
+    <text x="14" y="88" class="col">request_type : VARCHAR</text>
   </g>
 
   <!-- log_levels -->
-  <g transform="translate(420,200)">
+  <g transform="translate(420,210)">
     <rect class="table" width="320" height="76" rx="8" />
     <rect class="header-rect" width="320" height="30" rx="8"/>
     <text x="14" y="20" class="title">log_levels</text>
-    <text x="14" y="48" class="col"><tspan class="pk">log_level_id</tspan> : INT (PK)</text>
-    <text x="14" y="68" class="col">name : TEXT</text>
+    <text x="14" y="48" class="col"><tspan class="pk">log_level_id</tspan> : SERIAL (PK)</text>
+    <text x="14" y="68" class="col">level_name : VARCHAR</text>
   </g>
 
   <!-- error_categories -->
-  <g transform="translate(800,200)">
+  <g transform="translate(800,210)">
     <rect class="table" width="320" height="76" rx="8" />
     <rect class="header-rect" width="320" height="30" rx="8"/>
     <text x="14" y="20" class="title">error_categories</text>
-    <text x="14" y="48" class="col"><tspan class="pk">error_category_id</tspan> : INT (PK)</text>
-    <text x="14" y="68" class="col">name : TEXT</text>
+    <text x="14" y="48" class="col"><tspan class="pk">error_category_id</tspan> : SERIAL (PK)</text>
+    <text x="14" y="68" class="col">category_name : VARCHAR</text>
   </g>
 
-  <!-- logs central table -->
-  <g transform="translate(220,360)">
-    <rect class="table" width="1060" height="650" rx="10" />
-    <rect class="header-rect" width="1060" height="36" rx="10"/>
+  <!-- logs -->
+  <g transform="translate(140,360)">
+    <rect class="table" width="1320" height="660" rx="10" />
+    <rect class="header-rect" width="1320" height="36" rx="10"/>
     <text x="16" y="24" class="title">logs</text>
 
-    <!-- column layout two columns per row for clarity -->
-    <text x="16" y="60" class="col"><tspan class="pk">log_id</tspan> : BIGSERIAL (PK)</text>
-    <text x="300" y="60" class="col">service_id : INT (FK → services.service_id)</text>
-    <text x="580" y="60" class="col">server_id : INT (FK → servers.server_id)</text>
-    <text x="860" y="60" class="col">user_id : INT (FK → users.user_id)</text>
+    <text x="16" y="62" class="col"><tspan class="pk">log_id</tspan> : BIGSERIAL (PK)</text>
+    <text x="330" y="62" class="col">request_id : UUID</text>
+    <text x="590" y="62" class="col">service_id : INT (FK → services.service_id)</text>
+    <text x="980" y="62" class="col">server_id : INT (FK → servers.server_id)</text>
 
-    <text x="16" y="92" class="col">endpoint_id : INT (FK → api_endpoints.endpoint_id)</text>
-    <text x="300" y="92" class="col">log_level_id : INT (FK → log_levels.log_level_id)</text>
-    <text x="580" y="92" class="col">error_category_id : INT (FK → error_categories.error_category_id)</text>
-    <text x="860" y="92" class="col">message : TEXT</text>
+    <text x="16" y="96" class="col">user_id : INT (FK → users.user_id, nullable)</text>
+    <text x="330" y="96" class="col">endpoint_id : INT (FK → api_endpoints.endpoint_id)</text>
+    <text x="590" y="96" class="col">log_level_id : INT (FK → log_levels.log_level_id)</text>
+    <text x="980" y="96" class="col">error_category_id : INT (FK → error_categories.error_category_id, nullable)</text>
 
-    <text x="16" y="124" class="col">response_time_ms : INT</text>
-    <text x="300" y="124" class="col">ip_address : INET</text>
-    <text x="580" y="124" class="col">status_code : INT</text>
-    <text x="860" y="124" class="col">created_at : TIMESTAMP</text>
+    <text x="16" y="130" class="col">message : TEXT</text>
+    <text x="330" y="130" class="col">method : VARCHAR(10)</text>
+    <text x="590" y="130" class="col">response_time_ms : INT</text>
+    <text x="980" y="130" class="col">ip_address : INET</text>
 
-    <!-- optional indexes/meta note -->
-    <text x="16" y="164" class="meta">Suggested indexes: (created_at), (service_id, created_at), (status_code), (log_level_id)</text>
-
+    <text x="16" y="164" class="col">status_code : INT</text>
+    <text x="330" y="164" class="col">created_at : TIMESTAMPTZ</text>
+    <text x="590" y="164" class="meta">Checks: response_time_ms >= 0, status_code between 100 and 599</text>
+    <text x="16" y="204" class="meta">Suggested indexes: (created_at), (service_id, created_at), (log_level_id), (service_id, log_level_id)</text>
   </g>
 
-  <!-- relationship lines from logs to reference tables -->
-  <!-- service_id -->
-  <path d="M 500 420 C 380 300, 200 220, 180 156" class="rel" />
-  <polygon points="178,154 182,154 180,158" fill="#444" />
-  <text x="420" y="340" class="meta">logs.service_id → services.service_id</text>
+  <!-- relationships -->
+  <path d="M 620 420 C 500 300, 320 240, 200 156" class="rel" />
+  <text x="392" y="330" class="meta">logs.service_id → services.service_id</text>
 
-  <!-- server_id -->
-  <path d="M 760 420 C 860 300, 980 220, 560 156" class="rel" />
-  <polygon points="558,154 562,154 560,158" fill="#444" />
-  <text x="700" y="340" class="meta">logs.server_id → servers.server_id</text>
+  <path d="M 970 420 C 1030 300, 930 240, 580 156" class="rel" />
+  <text x="820" y="330" class="meta">logs.server_id → servers.server_id</text>
 
-  <!-- user_id -->
-  <path d="M 940 420 C 1100 300, 1150 220, 980 156" class="rel" />
-  <polygon points="978,154 982,154 980,158" fill="#444" />
-  <text x="820" y="340" class="meta">logs.user_id → users.user_id</text>
+  <path d="M 420 420 C 300 320, 220 260, 960 156" class="rel" />
+  <text x="540" y="330" class="meta">logs.user_id → users.user_id</text>
 
-  <!-- endpoint_id -->
-  <path d="M 620 420 C 460 300, 260 260, 100 236" class="rel fk" />
-  <polygon points="98,234 102,234 100,238" fill="#444" />
-  <text x="360" y="360" class="meta">logs.endpoint_id → api_endpoints.endpoint_id</text>
+  <path d="M 620 420 C 480 320, 320 290, 120 306" class="rel fk" />
+  <text x="410" y="370" class="meta">logs.endpoint_id → api_endpoints.endpoint_id</text>
 
-  <!-- log_level_id -->
-  <path d="M 520 420 C 440 340, 520 260, 460 236" class="rel fk" />
-  <polygon points="458,234 462,234 460,238" fill="#444" />
-  <text x="480" y="360" class="meta">logs.log_level_id → log_levels.log_level_id</text>
+  <path d="M 760 420 C 760 330, 650 290, 580 286" class="rel fk" />
+  <text x="660" y="370" class="meta">logs.log_level_id → log_levels.log_level_id</text>
 
-  <!-- error_category_id -->
-  <path d="M 640 420 C 780 340, 900 260, 960 236" class="rel fk" />
-  <polygon points="958,234 962,234 960,238" fill="#444" />
-  <text x="700" y="380" class="meta">logs.error_category_id → error_categories.error_category_id</text>
+  <path d="M 1060 420 C 1180 320, 1240 280, 960 286" class="rel fk" />
+  <text x="1010" y="390" class="meta">logs.error_category_id → error_categories.error_category_id</text>
 
-  <!-- legend -->
-  <g transform="translate(40,1020)">
-    <rect x="0" y="0" width="1420" height="60" fill="#f7fafc" stroke="#ddd" rx="6"/>
-    <text x="12" y="20" class="meta">PK = Primary Key, FK = Foreign Key. Types shown alongside attribute names.</text>
+  <g transform="translate(40,1040)">
+    <rect x="0" y="0" width="1520" height="56" fill="#f8fafc" stroke="#d1d5db" rx="6"/>
+    <text x="12" y="22" class="meta">PK = Primary Key, FK = Foreign Key. Diagram updated to reflect the current logs schema and reference tables.</text>
   </g>
-
 </svg>
