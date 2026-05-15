@@ -13,6 +13,8 @@ CREATE USER log_user WITH PASSWORD 'change_me';
 GRANT ALL PRIVILEGES ON DATABASE log_management TO log_user;
 ```
 
+4. Copy `.env.example` to `.env` and set your database credentials before running the generator.
+
 ## pgAdmin setup
 
 1. Install pgAdmin if you prefer a GUI.
@@ -38,10 +40,10 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 
 ## Running scripts
 
-1. Ensure the DB is created and schema files applied. Example using psql:
+1. Ensure the DB is created and apply the master schema file first:
 
 ```powershell
-psql -h localhost -U postgres -d log_management -f sql/schema/logs.sql
+psql -h localhost -U postgres -d log_management -f sql/schema/00_create_all_tables.sql
 ```
 
 2. Seed reference tables:
@@ -52,7 +54,7 @@ psql -h localhost -U postgres -d log_management -f sql/seed/seed_servers.sql
 # ... other seed files
 ```
 
-3. Generate logs (from project root, with venv activated):
+3. Generate logs from the project root, with venv activated:
 
 ```powershell
 python scripts/generate_logs.py
