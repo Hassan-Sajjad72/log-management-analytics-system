@@ -47,4 +47,4 @@ See [docs/advanced_db_techniques.md](docs/advanced_db_techniques.md)
 
 ## Current Status
 
-The schema, seed files, generator script, benchmark queries, and supporting documentation are in place. The project is ready for database setup, log generation, and query benchmarking.
+The schema, seed files, generator script, benchmark queries, and supporting documentation are in place. The project is currently in the database setup and benchmarking preparation phase.
