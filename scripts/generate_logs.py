@@ -1,9 +1,14 @@
 import random
+import os
 from datetime import datetime, timedelta
 
+from dotenv import load_dotenv
 from faker import Faker
 import psycopg2
 from psycopg2.extras import execute_batch
+
+# Load environment variables from .env file
+load_dotenv()
 
 # this creates faker object which generates:
 # - fake ips
@@ -13,11 +18,11 @@ fake = Faker()
 
 # this connnects to the database
 connection = psycopg2.connect(
-    host="localhost",
-    database="log_management",
-    user="postgres",
-    password="bisma",
-    port=5432
+    host=os.getenv("DB_HOST", "localhost"),
+    database=os.getenv("DB_NAME", "log_management"),
+    user=os.getenv("DB_USER", "postgres"),
+    password=os.getenv("DB_PASSWORD", ""),
+    port=int(os.getenv("DB_PORT", 5432))
 )
 
 # create cursor which helps us to execute sql queries
@@ -47,8 +52,8 @@ endpoint_ids = [row[0] for row in cursor.fetchall()]
 cursor.execute("SELECT server_id FROM servers")
 server_ids = [row[0] for row in cursor.fetchall()]
 
-batch_size = 5000
-total_logs = 1000000
+batch_size = int(os.getenv("BATCH_SIZE", 5000))
+total_logs = int(os.getenv("TOTAL_LOGS", 1000000))
 
 # generate log data
 def generate_log():
