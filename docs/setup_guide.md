@@ -51,7 +51,10 @@ psql -h localhost -U postgres -d log_management -f sql/schema/00_create_all_tabl
 ```powershell
 psql -h localhost -U postgres -d log_management -f sql/seed/seed_services.sql
 psql -h localhost -U postgres -d log_management -f sql/seed/seed_servers.sql
-# ... other seed files
+psql -h localhost -U postgres -d log_management -f sql/seed/seed_log_levels.sql
+psql -h localhost -U postgres -d log_management -f sql/seed/seed_error_categories.sql
+psql -h localhost -U postgres -d log_management -f sql/seed/seed_servers.sql
+psql -h localhost -U postgres -d log_management -f sql/seed/seed_api_endpoints.sql
 ```
 
 3. Generate logs from the project root, with venv activated:
