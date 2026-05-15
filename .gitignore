@@ -1,4 +1,8 @@
 venv/
+.venv/
 __pycache__/
-.env.example
+.env
 *.csv
+*.log
+*.dump
+*.sql.gz
