@@ -8,4 +8,5 @@ INSERT INTO error_categories (category_name) VALUES
 ('Hardware Failures'),
 ('Configuration Errors'),
 ('Third-Party Service Failures'),
-('Data Corruption');
+('Data Corruption')
+ON CONFLICT DO NOTHING;
