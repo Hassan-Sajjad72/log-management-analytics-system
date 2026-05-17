@@ -155,3 +155,57 @@ ORDER BY created_at DESC;
 
 ### Execution Time:
 221.92 ms
+
+# 4.  Partitioning
+
+## Query - 1: Partition pruning check
+
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT log_id, service_id, log_level_id, created_at
+FROM logs
+WHERE created_at >= '2026-04-01'
+  AND created_at < '2026-06-01'
+ORDER BY created_at DESC
+LIMIT 100;
+
+### Execution Time:
+486.017 ms
+
+## Query -2: Cross partition query
+
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT service_id, COUNT(*) AS log_count
+FROM logs
+WHERE created_at >= CURRENT_TIMESTAMP - INTERVAL '60 days'
+GROUP BY service_id
+ORDER BY log_count DESC;
+
+### Execution Time:
+1394.995 ms
+
+## Query - 3: Single partition error query
+
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT service_id, COUNT(*) AS error_count
+FROM logs
+WHERE created_at >= '2024-06-01'
+  AND created_at < '2024-08-01'
+  AND log_level_id = 4
+GROUP BY service_id
+ORDER BY error_count DESC;
+
+### Execution Time:
+77.615 ms
+
+
+## Query - 4: Flat vs Partition comparison
+
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT service_id, COUNT(*) AS log_count
+FROM logs_unpartitioned
+WHERE created_at >= '2025-10-01'
+  AND created_at < '2025-12-01'
+GROUP BY service_id;
+
+### Execution Time:
+166.971 ms
