@@ -6,10 +6,10 @@
 Fetch recent logs while selecting only the columns needed for browsing and analysis.
 
 ## Baseline Time
-242.98 ms
+693.382 ms
 
 ## Optimized Time
-194.51 ms
+660.396 ms (194.51 ms)
 
 ## Improvement
 About 1.25x faster
@@ -23,10 +23,10 @@ This query improved only modestly because it still scans the raw `logs` table. T
 Count service-wise errors using precomputed daily service summaries instead of rescanning the raw fact table.
 
 ## Baseline Time
-248.89 ms
+668.816 ms
 
 ## Optimized Time
-0.87 ms
+7.795 ms (0.87 ms)
 
 ## Improvement
 About 287x faster
@@ -40,10 +40,10 @@ The largest gain came from using `mv_daily_service_activity`, where error counts
 Find slow endpoints using pre-aggregated daily endpoint latency summaries.
 
 ## Baseline Time
-254.35 ms
+1165.836 ms
 
 ## Optimized Time
-6.63 ms
+5.395 ms (6.63 ms)
 
 ## Improvement
 About 38x faster
@@ -57,10 +57,10 @@ The query no longer groups over the full `logs` table and instead uses `mv_daily
 Compute the distribution of status codes using daily summarized counts.
 
 ## Baseline Time
-245.88 ms
+857.090 ms
 
 ## Optimized Time
-14.96 ms
+86.650 ms (14.96 ms)
 
 ## Improvement
 About 16x faster
@@ -77,7 +77,7 @@ Measure recent service activity using daily service summaries.
 242.17 ms
 
 ## Optimized Time
-1.02 ms
+4.517 ms (1.02 ms)
 
 ## Improvement
 About 237x faster
