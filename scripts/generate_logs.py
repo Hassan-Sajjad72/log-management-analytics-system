@@ -71,7 +71,7 @@ def generate_log():
         fake.ipv4(),
         random.randint(200, 500),
         fake.date_time_between(
-            start_date='-90d',
+            start_date='-867d',
             end_date='now'
         )
     )
