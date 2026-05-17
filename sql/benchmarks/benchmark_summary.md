@@ -104,3 +104,54 @@ ORDER BY day DESC;
 
 ### Execution Time:
 0.829 ms
+
+# 3. Indexing
+
+## Query - 1: Before Creating indexes
+
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT log_id, service_id, log_level_id, created_at, status_code
+FROM logs
+WHERE created_at >= CURRENT_TIMESTAMP - INTERVAL '7 days'
+ORDER BY created_at DESC
+LIMIT 100;
+
+### Execution Time:
+890.627
+
+## Query - 2: After Creating Indexes
+
+SELECT log_id, service_id, log_level_id, created_at, status_code
+FROM logs
+WHERE created_at >= CURRENT_TIMESTAMP - INTERVAL '7 days'
+ORDER BY created_at DESC
+LIMIT 100;
+
+### Execution Time:
+1.635 ms
+
+## Query - 3: Composite index on service errors
+
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT log_id, created_at, message, status_code
+FROM logs
+WHERE service_id = 1
+  AND log_level_id = 4
+ORDER BY created_at DESC
+LIMIT 50;
+
+### Execution Time:
+0.544 ms
+
+## Query - 4: Partial index on errors
+
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT log_id, service_id, created_at, message
+FROM logs
+WHERE log_level_id IN (4, 5)
+  AND service_id = 2
+  AND created_at >= CURRENT_TIMESTAMP - INTERVAL '30 days'
+ORDER BY created_at DESC;
+
+### Execution Time:
+221.92 ms
