@@ -79,3 +79,17 @@ psql -h localhost -U postgres -d log_management -f sql/schema/02_refresh_materia
 ```
 
 6. If you run into Python module errors, ensure the virtualenv is activated and packages from `requirements.txt` are installed.
+
+## Applying Partitioning
+
+After seeding and generating logs, apply the partitioned schema:
+
+```powershell
+psql -h localhost -U postgres -d log_management -f sql/schema/05_create_partitioned_logs.sql
+```
+
+Verify partition pruning is active by running:
+
+```powershell
+psql -h localhost -U postgres -d log_management -f sql/benchmarks/partitioning/01_partition_pruning_check.sql
+```
