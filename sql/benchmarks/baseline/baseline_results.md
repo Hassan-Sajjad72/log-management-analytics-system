@@ -16,7 +16,7 @@ LIMIT 100;
 ```
 
 ## Before Optimization
-Execution time: 0.081 ms
+Execution time: 693.382 ms
 
 ## 02_errors_by_service
 
@@ -40,7 +40,7 @@ ORDER BY error_count DESC;
 ```
 
 ## Before Optimization
-Execution time: 0.093 ms
+Execution time: 668.816 ms
 
 ## 03_slowest_endpoints
 
@@ -61,7 +61,7 @@ LIMIT 20;
 ```
 
 ## Before Optimization
-Execution time: 1.032 ms
+Execution time: 1165.836 ms
 
 ## 04_status_code_distribution
 
@@ -80,7 +80,7 @@ ORDER BY status_code;
 ```
 
 ## Before Optimization
-Execution time: 0.052 ms
+Execution time: 857.090 ms
 
 ## 05_service_activity
 
@@ -100,4 +100,4 @@ ORDER BY log_count DESC;
 ```
 
 ## Before Optimization
-Execution time: 0.078 ms
+Execution time: 1097.584 ms
