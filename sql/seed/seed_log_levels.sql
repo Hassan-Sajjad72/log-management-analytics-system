@@ -7,4 +7,5 @@ INSERT INTO log_levels (level_name) VALUES
 ('TRACE'),
 ('NOTICE'),
 ('ALERT'),
-('EMERGENCY');
+('EMERGENCY')
+ON CONFLICT DO NOTHING;

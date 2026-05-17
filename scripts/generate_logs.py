@@ -97,10 +97,11 @@ INSERT INTO logs (
 
 # generate many logs
 for i in range(0, total_logs, batch_size):
-    batch = [generate_log() for _ in range(batch_size)]
+    current_batch_size = min(batch_size, total_logs - i)
+    batch = [generate_log() for _ in range(current_batch_size)]
     execute_batch(cursor, insert_query, batch)
     connection.commit()
-    print(f"Inserted {i + batch_size} logs")
+    print(f"Inserted {i + current_batch_size} logs")
 
 # close connection
 cursor.close()

@@ -18,4 +18,5 @@ INSERT INTO servers (server_name, region, operating_system) VALUES
 ('Server Q', 'Africa', 'Linux'),
 ('Server R', 'Middle East', 'Windows Server'),
 ('Server S', 'Central America', 'Linux'),
-('Server T', 'Caribbean', 'Windows Server');
+('Server T', 'Caribbean', 'Windows Server')
+ON CONFLICT DO NOTHING;

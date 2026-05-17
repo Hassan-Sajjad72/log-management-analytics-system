@@ -48,4 +48,5 @@ INSERT INTO api_endpoints (endpoint_path, request_type) VALUES
 ('/api/v1/data/analytics/export', 'POST'),
 ('/api/v1/inventory/audit', 'GET'),
 ('/api/v1/support/ticket/escalate', 'POST'),
-('/api/v1/reports/custom', 'POST');
+('/api/v1/reports/custom', 'POST')
+ON CONFLICT DO NOTHING;

@@ -1,44 +1,44 @@
 -- Master schema file for setting up the database in dependency order.
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     user_id SERIAL PRIMARY KEY,
     username VARCHAR(255) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE services (
+CREATE TABLE IF NOT EXISTS services (
     service_id SERIAL PRIMARY KEY,
     service_name VARCHAR(255) NOT NULL UNIQUE,
     owner_team VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE log_levels (
+CREATE TABLE IF NOT EXISTS log_levels (
     log_level_id SERIAL PRIMARY KEY,
     level_name VARCHAR(50) NOT NULL UNIQUE
 );
 
-CREATE TABLE error_categories (
+CREATE TABLE IF NOT EXISTS error_categories (
     error_category_id SERIAL PRIMARY KEY,
     category_name VARCHAR(255) NOT NULL UNIQUE
 );
 
-CREATE TABLE servers (
+CREATE TABLE IF NOT EXISTS servers (
     server_id SERIAL PRIMARY KEY,
     server_name VARCHAR(255) NOT NULL UNIQUE,
     region VARCHAR(255),
     operating_system VARCHAR(255)
 );
 
-CREATE TABLE api_endpoints (
+CREATE TABLE IF NOT EXISTS api_endpoints (
     endpoint_id SERIAL PRIMARY KEY,
     endpoint_path VARCHAR(255) NOT NULL,
     request_type VARCHAR(20) NOT NULL,
     UNIQUE(endpoint_path, request_type)
 );
 
-CREATE TABLE logs (
+CREATE TABLE IF NOT EXISTS logs (
     log_id BIGSERIAL PRIMARY KEY,
     request_id UUID NOT NULL,
     service_id INT NOT NULL REFERENCES services(service_id),

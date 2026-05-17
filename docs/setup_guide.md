@@ -50,6 +50,14 @@ psql -h localhost -U postgres -d log_management -f sql/schema/00_create_all_tabl
 
 ```powershell
 psql -h localhost -U postgres -d log_management -f sql/seed/00_seed_all.sql
+
+# Or run individual seed files (if you prefer explicit ordering):
+psql -h localhost -U postgres -d log_management -f sql/seed/seed_users.sql
+psql -h localhost -U postgres -d log_management -f sql/seed/seed_services.sql
+psql -h localhost -U postgres -d log_management -f sql/seed/seed_servers.sql
+psql -h localhost -U postgres -d log_management -f sql/seed/seed_log_levels.sql
+psql -h localhost -U postgres -d log_management -f sql/seed/seed_error_categories.sql
+psql -h localhost -U postgres -d log_management -f sql/seed/seed_api_endpoints.sql
 ```
 
 3. Generate logs from the project root, with venv activated:
@@ -58,4 +66,16 @@ psql -h localhost -U postgres -d log_management -f sql/seed/00_seed_all.sql
 python scripts/generate_logs.py
 ```
 
-4. If you run into Python module errors, ensure the virtualenv is activated and packages from `requirements.txt` are installed.
+4. Create the materialized views for dashboard-style analytics:
+
+```powershell
+psql -h localhost -U postgres -d log_management -f sql/schema/01_create_materialized_views.sql
+```
+
+5. After loading more logs later, refresh the summaries:
+
+```powershell
+psql -h localhost -U postgres -d log_management -f sql/schema/02_refresh_materialized_views.sql
+```
+
+6. If you run into Python module errors, ensure the virtualenv is activated and packages from `requirements.txt` are installed.

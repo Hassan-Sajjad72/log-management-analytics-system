@@ -8,4 +8,5 @@ INSERT INTO services (service_name, owner_team) VALUES
 ('Customer Support Service', 'Support Team'),
 ('Reporting Service', 'Business Intelligence Team'),
 ('Search Service', 'Search Team'),
-('Recommendation Engine', 'Machine Learning Team');
+('Recommendation Engine', 'Machine Learning Team')
+ON CONFLICT DO NOTHING;
