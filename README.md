@@ -15,6 +15,13 @@ The project addresses the difficulty of managing high-volume logs that grow quic
 - Seed data for reference entities
 - Benchmark queries and results for performance comparison
 - Documentation for database design, setup, and advanced techniques
+- **Advanced Database Techniques**:
+  - Indexing (single-column, composite, partial indexes)
+  - Partitioning (range partitioning by date, partition pruning)
+  - Materialized Views (precomputed aggregations for dashboards)
+  - OLAP aggregation (multi-level summaries)
+  - Concurrency Control (MVCC, isolation levels, row-level locking)
+  - Query Optimization (optimized queries with better execution plans)
 
 ## Tech Stack
 
@@ -29,9 +36,35 @@ The project addresses the difficulty of managing high-volume logs that grow quic
 
 - `scripts/` - log generation script
 - `sql/schema/` - table definitions and master schema file
+  - `04_create_indexes.sql` - index creation for optimization
+  - `05_create_partitioned_logs.sql` - partitioned table setup
+  - `01_create_materialized_views.sql` - materialized view creation
+  - `02_refresh_materialized_views.sql` - MV refresh with CONCURRENTLY
+  - `03_create_olap_aggregation.sql` - OLAP summary tables
 - `sql/seed/` - seed data for reference tables
 - `sql/benchmarks/` - benchmark SQL and results
+  - `baseline/` - baseline queries without optimization
+  - `indexing/` - before/after index performance benchmarks
+  - `partitioning/` - partition pruning and comparison benchmarks
+  - `materialized_views/` - MV query benchmarks
+  - `olap/` - OLAP aggregation query benchmarks
+  - `optimized/` - optimized query versions with better plans
+  - `concurrency/` - lock monitoring and contention analysis
+  - `benchmark_summary.md` - summary of all benchmark results
+- `sql/concurrency/` - concurrency control demos
+  - `01_isolation_levels_demo.sql` - READ COMMITTED vs REPEATABLE READ
+  - `02_row_level_locking_demo.sql` - SELECT FOR UPDATE examples
+  - `03_concurrent_insert_simulation.sql` - concurrent inserts
+  - `04_deadlock_prevention_demo.sql` - lock ordering strategies
+  - `05_mvcc_visibility_demo.sql` - MVCC and VACUUM demonstration
 - `docs/` - project documentation and diagrams
+  - `techniques/` - advanced technique documentation
+    - `materialized_views.md` - MV explanation and impact
+    - `indexing.md` - index strategies and performance
+    - `partitioning.md` - range partitioning and pruning
+    - `concurrency_control.md` - MVCC and isolation levels
+    - `query_optimization.md` - optimization techniques
+    - `olap_aggregation.md` - OLAP design patterns
 
 ## Setup Guide
 
