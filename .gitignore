@@ -6,3 +6,4 @@ __pycache__/
 *.log
 *.dump
 *.sql.gz
+e.md
