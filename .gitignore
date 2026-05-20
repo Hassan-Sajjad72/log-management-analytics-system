@@ -7,3 +7,7 @@ __pycache__/
 *.dump
 *.sql.gz
 e.md
+backend/venv/
+backend/.env
+__pycache__/
+*.pyc
