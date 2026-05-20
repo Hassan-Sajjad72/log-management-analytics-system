@@ -28,6 +28,21 @@ def recent_logs_query():
         LIMIT 100;
     """
 
+def services_query():
+    return """
+        SELECT service_id, service_name, owner_team
+        FROM services
+        ORDER BY service_id;
+    """
+
+
+def log_levels_query():
+    return """
+        SELECT log_level_id, level_name
+        FROM log_levels
+        ORDER BY log_level_id;
+    """
+
 def errors_by_service_query():
     return """
         SELECT
@@ -145,4 +160,16 @@ def log_detail_query():
         JOIN log_levels ll ON l.log_level_id = ll.log_level_id
         LEFT JOIN error_categories ec ON l.error_category_id = ec.error_category_id
         WHERE l.log_id = %s;
+    """
+
+def endpoint_latency_query():
+    return """
+        SELECT
+            ae.endpoint_path,
+            ROUND(AVG(l.response_time_ms), 2) AS avg_latency
+        FROM logs l
+        JOIN api_endpoints ae ON l.endpoint_id = ae.endpoint_id
+        GROUP BY ae.endpoint_path
+        ORDER BY avg_latency DESC
+        LIMIT 10;
     """
