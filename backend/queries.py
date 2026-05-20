@@ -25,7 +25,7 @@ def recent_logs_query():
         FROM logs l
         JOIN services s ON l.service_id = s.service_id
         JOIN log_levels ll ON l.log_level_id = ll.log_level_id
-        WHERE l.created_at >= CURRENT_TIMESTAMP - INTERVAL '24 hours'
+        WHERE l.created_at >= CURRENT_TIMESTAMP - INTERVAL '30 days'
         ORDER BY l.created_at DESC
         LIMIT %s;
     """
