@@ -6,8 +6,8 @@ app = Flask(__name__)
 
 @app.route('/')
 def dashboard():
-    summary = fetch_one(queries.dashboard_summar_query())
-    recent_logs = fetch_all(queries.recent_logs_query())
+    summary = fetch_one(queries.dashboard_summary_query())
+    recent_logs = fetch_all(queries.recent_logs_query(), (10,))
 
     return render_template(
         "dashboard.html",
