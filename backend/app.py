@@ -40,7 +40,7 @@ def logs():
 
 @app.route('/logs/<int:log_id>')
 def log_detail(log_id):
-    log = fetch_one(queries.log_detail_query(), (log_id))
+    log = fetch_one(queries.log_detail_query(), (log_id,))
 
     if not log:
         abort(404)

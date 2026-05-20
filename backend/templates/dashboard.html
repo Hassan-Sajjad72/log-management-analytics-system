@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Dashboard</h1>
+<h1 class="page-title">
+    Dashboard
+</h1>
 
 <div class="cards">
     <div class="card">
@@ -54,15 +56,62 @@
     </tr>
 
     {% for log in recent_logs %}
-    <tr>
+    <tr class="clickable-row" data-href="/logs/{{ log.log_id }}" role="link" tabindex="0">
         <td><a href="/logs/{{ log.log_id }}">{{ log.log_id }}</a></td>
         <td>{{ log.created_at }}</td>
         <td>{{ log.service_name }}</td>
         <td>{{ log.level_name }}</td>
         <td>{{ log.status_code }}</td>
         <td>{{ log.response_time_ms }} ms</td>
-        <td>{{ log.message }}</td>
+        <td class="message-cell" data-full="{{ log.message | e }}">{{ log.message }}</td>
     </tr>
     {% endfor %}
 </table>
+<div id="tooltip" class="tooltip" aria-hidden="true"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    var tooltip = document.getElementById('tooltip');
+
+    function showTooltip(text, e){
+        if(!text) return;
+        tooltip.textContent = text;
+        tooltip.style.display = 'block';
+        tooltip.setAttribute('aria-hidden', 'false');
+        tooltip.style.left = (e.pageX + 12) + 'px';
+        tooltip.style.top = (e.pageY + 12) + 'px';
+    }
+
+    function moveTooltip(e){
+        tooltip.style.left = (e.pageX + 12) + 'px';
+        tooltip.style.top = (e.pageY + 12) + 'px';
+    }
+
+    function hideTooltip(){
+        tooltip.style.display = 'none';
+        tooltip.setAttribute('aria-hidden', 'true');
+    }
+
+    // Make rows clickable and keyboard accessible
+    document.querySelectorAll('.clickable-row').forEach(function(row){
+        row.addEventListener('click', function(){ window.location = row.dataset.href; });
+        row.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' ') { window.location = row.dataset.href; } });
+
+        // If the row contains a message cell, show tooltip when hovering row
+        var msgCell = row.querySelector('.message-cell');
+        if(msgCell){
+            row.addEventListener('mouseenter', function(e){ showTooltip(msgCell.dataset.full || msgCell.textContent, e); });
+            row.addEventListener('mousemove', moveTooltip);
+            row.addEventListener('mouseleave', hideTooltip);
+        }
+    });
+
+    // Keep existing behavior for direct message-cell hover (useful if message is long and column visible)
+    document.querySelectorAll('.message-cell').forEach(function(cell){
+        cell.addEventListener('mouseenter', function(e){ showTooltip(cell.dataset.full || cell.textContent, e); });
+        cell.addEventListener('mousemove', moveTooltip);
+        cell.addEventListener('mouseleave', hideTooltip);
+    });
+});
+</script>
 {% endblock %}

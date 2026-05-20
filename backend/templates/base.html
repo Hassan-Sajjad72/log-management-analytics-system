@@ -4,11 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log Management Analytics</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/logo.jpg') }}" type="image/jpeg">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     
     <nav>
+        <div class="nav-brand">
+            <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="LMA" class="nav-logo">
+            <span class="project-name">LMA</span>
+        </div>
         <a href="/">Dashboard</a>
         <a href="/logs">Logs</a>
         <a href="/analytics">Analytics</a>
