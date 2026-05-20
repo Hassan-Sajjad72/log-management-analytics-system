@@ -22,17 +22,18 @@ body{
 nav{
     background:var(--accent-solid);
     color:white;
-    padding:14px 20px;
+    padding:14px 20px 14px 140px; /* left padding reserves space for brand */
     display:flex;
     align-items:center;
     justify-content:center;
     gap:18px;
     flex-wrap:wrap;
     box-shadow: 0 3px 10px rgba(15,23,42,0.08);
+    position:relative;
 }
 
-.nav-brand{position:absolute; left:20px; display:flex; align-items:center; gap:10px}
-.nav-logo{width:40px; height:40px; border-radius:50%; background:radial-gradient(circle at 30% 30%, #06b6d4 0%, #4f46e5 70%); padding:6px; box-shadow:0 6px 18px rgba(15,23,42,0.12);}
+.nav-brand{position:absolute; left:20px; top:10px; display:flex; align-items:center; gap:10px}
+.nav-logo{width:44px; height:44px; border-radius:50%; background:radial-gradient(circle at 30% 30%, #06b6d4 0%, #4f46e5 70%); padding:6px; box-shadow:0 6px 18px rgba(15,23,42,0.12);} 
 .nav-logo img{width:100%; height:100%; display:block; border-radius:50%}
 .project-name{font-weight:800; letter-spacing:0.6px}
 
@@ -43,7 +44,13 @@ nav a{
     opacity:0.95;
 }
 
-nav a:hover{opacity:1; text-decoration:underline}
+/* nav link styles */
+.nav-link{color:white; text-decoration:none; font-weight:600; opacity:0.95; padding:6px 8px; border-radius:8px; transition:color .12s ease, background .12s ease, transform .12s ease}
+.nav-link:hover{opacity:1; color:#e6eefc; transform:translateY(-1px)}
+.nav-link.active{background:rgba(255,255,255,0.12); color:#fff; font-weight:700; box-shadow:inset 0 -2px 0 rgba(255,255,255,0.04)}
+
+.nav-brand{display:flex; align-items:center; gap:10px; text-decoration:none}
+.nav-brand .project-name{color:white}
 
 main{
     padding:28px;
@@ -59,7 +66,12 @@ main{
 }
 
 .page-title{display:flex;align-items:center;gap:12px;font-size:22px;margin:4px 0 16px}
+.page-title{display:flex;align-items:center;gap:12px;font-size:22px;margin:4px 0 16px}
 /* .page-title-logo{width:44px;height:44px;border-radius:8px;box-shadow:0 6px 18px rgba(15,23,42,0.08)} */
+
+/* Back button */
+.back-btn{background:transparent;border:0;color:var(--muted);padding:8px 10px;border-radius:8px;cursor:pointer;margin-bottom:12px;font-size:14px}
+.back-btn:hover{background:rgba(15,23,42,0.04);color:#0f172a}
 
 .card{
     background:var(--card);
@@ -124,18 +136,37 @@ td a{color:var(--accent-solid); text-decoration:none; font-weight:600}
 form{background:var(--card); padding:14px; margin-bottom:18px; border-radius:10px; box-shadow:var(--surface-shadow)}
 input, select, button{padding:8px 10px; margin-right:10px; border-radius:8px; border:1px solid #e6eef6}
 
+/* Logs filter form: responsive grid */
+form[method="GET"]{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; align-items:center}
+form label{display:block; font-size:13px; color:var(--muted); margin-bottom:6px}
+form .form-group{display:flex; flex-direction:column}
+form input, form select{width:100%}
+form button{background:linear-gradient(90deg,#6366f1,#06b6d4); color:white; border:none; padding:10px 14px; cursor:pointer}
+form .form-group:last-child{align-self:start}
+
+/* Table improvements for small screens */
+@media (max-width: 760px){
+    /* reduce left padding so nav brand stacks if needed */
+    nav{padding-left:20px}
+    .nav-brand{position:static; order:-1; margin-bottom:8px}
+    /* stack filters vertically */
+    form[method="GET"]{grid-template-columns:1fr}
+}
+
 /* Responsive helpers */
 @media (max-width: 980px){
     main{padding:18px}
     .card p{font-size:18px}
 }
 
-/* Tables: allow horizontal scroll on small screens and hide less important cols */
+/* Tables: responsive layout on small screens without horizontal scroll */
 @media (max-width: 760px){
-    table{display:block; width:100%; overflow:auto}
+    table{display:block; width:100%; overflow:hidden; word-break:break-word}
     th:nth-child(3), td:nth-child(3), /* service_name */
     th:nth-child(7), td:nth-child(7) /* message */{display:none}
-    th, td{padding:10px}
+    th, td{padding:10px; white-space:normal; min-width:0}
+    /* ensure links and cells wrap instead of forcing horizontal scroll */
+    td a{display:inline-block; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 }
 
 @media (max-width: 420px){

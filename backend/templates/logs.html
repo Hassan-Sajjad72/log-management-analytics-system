@@ -4,35 +4,46 @@
 <h1>Logs</h1>
 
 <form method="GET" action="/logs">
-    <label>Service:</label>
-    <select name="service_id">
-        <option value="">All</option>
-        {% for service in services %}
-        <option value="{{ service.service_id }}"
-            {% if filters.service_id == service.service_id|string %}selected{% endif %}>
-            {{ service.service_name }}
-        </option>
-        {% endfor %}
-    </select>
+    <div class="form-group">
+        <label for="service_id">Service</label>
+        <select id="service_id" name="service_id">
+            <option value="">All</option>
+            {% for service in services %}
+            <option value="{{ service.service_id }}"
+                {% if filters.service_id == service.service_id|string %}selected{% endif %}>
+                {{ service.service_name }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
 
-    <label>Log Level:</label>
-    <select name="log_level_id">
-        <option value="">All</option>
-        {% for level in log_levels %}
-        <option value="{{ level.log_level_id }}"
-            {% if filters.log_level_id == level.log_level_id|string %}selected{% endif %}>
-            {{ level.level_name }}
-        </option>
-        {% endfor %}
-    </select>
+    <div class="form-group">
+        <label for="log_level_id">Log Level</label>
+        <select id="log_level_id" name="log_level_id">
+            <option value="">All</option>
+            {% for level in log_levels %}
+            <option value="{{ level.log_level_id }}"
+                {% if filters.log_level_id == level.log_level_id|string %}selected{% endif %}>
+                {{ level.level_name }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
 
-    <label>Status Code:</label>
-    <input type="number" name="status_code" value="{{ filters.status_code or '' }}">
+    <div class="form-group">
+        <label for="status_code">Status Code</label>
+        <input id="status_code" type="number" name="status_code" value="{{ filters.status_code or '' }}">
+    </div>
 
-    <label>Limit:</label>
-    <input type="number" name="limit" value="{{ filters.limit }}">
+    <div class="form-group">
+        <label for="limit">Limit</label>
+        <input id="limit" type="number" name="limit" value="{{ filters.limit }}">
+    </div>
 
-    <button type="submit">Filter</button>
+    <div class="form-group">
+        <label>&nbsp;</label>
+        <button type="submit">Filter</button>
+    </div>
 </form>
 
 <table>

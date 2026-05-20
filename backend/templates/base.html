@@ -10,21 +10,30 @@
 <body>
     
     <nav>
-        <div class="nav-brand">
+        {% set p = request.path %}
+        <a class="nav-brand" href="/">
             <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="LMA" class="nav-logo">
             <span class="project-name">LMA</span>
-        </div>
-        <a href="/">Dashboard</a>
-        <a href="/logs">Logs</a>
-        <a href="/analytics">Analytics</a>
-        <a href="/benchmarks">Benchmarks</a>
-        <a href="/techniques">Techniques</a>
-        <a href="/services">Services</a>
+        </a>
+        <a class="nav-link {% if p == '/' %}active{% endif %}" href="/">Dashboard</a>
+        <a class="nav-link {% if p.startswith('/logs') %}active{% endif %}" href="/logs">Logs</a>
+        <a class="nav-link {% if p.startswith('/analytics') %}active{% endif %}" href="/analytics">Analytics</a>
+        <a class="nav-link {% if p.startswith('/benchmarks') %}active{% endif %}" href="/benchmarks">Benchmarks</a>
+        <a class="nav-link {% if p.startswith('/techniques') %}active{% endif %}" href="/techniques">Techniques</a>
+        <a class="nav-link {% if p.startswith('/services') %}active{% endif %}" href="/services">Services</a>
     </nav>
 
     <main>
+        <button id="back-btn" class="back-btn" onclick="history.back()" aria-label="Go back">← Back</button>
         {% block content %} {% endblock %}
     </main>
+    <script>
+    document.addEventListener('DOMContentLoaded', function(){
+        var btn = document.getElementById('back-btn');
+        if(!btn) return;
+        try{ if(history.length < 2){ btn.style.display = 'none'; } }catch(e){}
+    });
+    </script>
     
 </body>
 </html>
