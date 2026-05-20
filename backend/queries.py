@@ -57,55 +57,6 @@ def errors_by_service_query():
         ORDER BY error_count DESC;
     """
 
-def slowest_endpoints_query():
-    return """
-        SELECT
-            endpoint_id,
-            endpoint_path,
-            request_type,
-            ROUND(
-                SUM(total_response_time_ms)::numeric
-                / NULLIF(SUM(request_count), 0),
-                2
-            ) AS avg_response_time_ms
-        FROM mv_daily_endpoint_latency
-        GROUP BY
-            endpoint_id,
-            endpoint_path,
-            request_type
-        ORDER BY avg_response_time_ms DESC
-        LIMIT 20;
-    """
-
-def status_code_distribution_query():
-    return """
-        SELECT
-            status_code,
-            SUM(status_count) AS status_count
-        FROM mv_daily_status_code_distribution
-        GROUP BY status_code
-        ORDER BY status_code;
-    """
-
-def service_activity_query():
-    return """
-        SELECT
-            service_id,
-            service_name,
-            SUM(total_logs) AS log_count,
-            ROUND(
-                SUM(total_response_time_ms)::numeric
-                / NULLIF(SUM(total_logs), 0),
-                2
-            ) AS avg_response_time_ms
-        FROM mv_daily_service_activity
-        WHERE day >= CURRENT_DATE - 30
-        GROUP BY
-            service_id,
-            service_name
-        ORDER BY log_count DESC;
-    """
-
 def filtered_logs_query(filters):
     query = """
         SELECT
