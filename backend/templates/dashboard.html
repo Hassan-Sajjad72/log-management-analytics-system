@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Dashboard</h1>
+
+<div class="cards">
+    <div class="card">
+        <h3>Total Logs</h3>
+        <p>{{ summary.total_logs }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Server Errors</h3>
+        <p>{{ summary.server_errors }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Client Errors</h3>
+        <p>{{ summary.client_errors }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Successful Requests</h3>
+        <p>{{ summary.successful_requests }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Redirects</h3>
+        <p>{{ summary.redirects }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Unknown Status</h3>
+        <p>{{ summary.unknown_status }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Avg Response Time</h3>
+        <p>{{ summary.avg_response_time }} ms</p>
+    </div>
+</div>
+
+<h2>Recent Logs</h2>
+
+<table>
+    <tr>
+        <th>Log ID</th>
+        <th>Time</th>
+        <th>Service Name</th>
+        <th>Level Name</th>
+        <th>Status Code</th>
+        <th>Response Time</th>
+        <th>Message</th>
+    </tr>
+
+    {% for log in recent_logs %}
+    <tr>
+        <td><a href="/logs/{{ log.log_id }}">{{ log.log_id }}</a></td>
+        <td>{{ log.created_at }}</td>
+        <td>{{ log.service_name }}</td>
+        <td>{{ log.level_name }}</td>
+        <td>{{ log.status_code }}</td>
+        <td>{{ log.response_time_ms }} ms</td>
+        <td>{{ log.message }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

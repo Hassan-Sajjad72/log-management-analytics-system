@@ -15,17 +15,19 @@ def dashboard_summary_query():
 def recent_logs_query():
     return """
         SELECT
-            log_id,
-            request_id,
-            service_id,
-            endpoint_id,
-            status_code,
-            response_time_ms,
-            created_at
-        FROM logs
-        WHERE created_at >= CURRENT_TIMESTAMP - INTERVAL '24 hours'
-        ORDER BY created_at DESC
-        LIMIT 100;
+            l.log_id,
+            l.created_at,
+            s.service_name,
+            ll.level_name,
+            l.status_code,
+            l.response_time_ms,
+            l.message
+        FROM logs l
+        JOIN services s ON l.service_id = s.service_id
+        JOIN log_levels ll ON l.log_level_id = ll.log_level_id
+        WHERE l.created_at >= CURRENT_TIMESTAMP - INTERVAL '24 hours'
+        ORDER BY l.created_at DESC
+        LIMIT %s;
     """
 
 def services_query():

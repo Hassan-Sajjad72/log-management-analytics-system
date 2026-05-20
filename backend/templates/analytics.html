@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Analytics</h1>
+
+<h2>Errors by Service</h2>
+
+<table>
+    <tr>
+        <th>Service Name</th>
+        <th>Error Count</th>
+    </tr>
+
+    {% for item in errors_by_service %}
+    <tr>
+        <td>{{ item.service_name }}</td>
+        <td>{{ item.error_count }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h2>Top Endpoint Latency</h2>
+
+<table>
+    <tr>
+        <th>Endpoint</th>
+        <th>Average Latency</th>
+    </tr>
+
+    {% for item in endpoint_latency %}
+    <tr>
+        <td>{{ item.endpoint_path }}</td>
+        <td>{{ item.avg_latency }} ms</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

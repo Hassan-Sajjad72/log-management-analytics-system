@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Services</h1>
+
+<table>
+    <tr>
+        <th>Service ID</th>
+        <th>Service Name</th>
+        <th>Owner Team</th>
+    </tr>
+
+    {% for service in services %}
+    <tr>
+        <td>{{ service.service_id }}</td>
+        <td>{{ service.service_name }}</td>
+        <td>{{ service.owner_team }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

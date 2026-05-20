@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Logs</h1>
+
+<form method="GET" action="/logs">
+    <label>Service:</label>
+    <select name="service_id">
+        <option value="">All</option>
+        {% for service in services %}
+        <option value="{{ service.service_id }}"
+            {% if filters.service_id == service.service_id|string %}selected{% endif %}>
+            {{ service.service_name }}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label>Log Level:</label>
+    <select name="log_level_id">
+        <option value="">All</option>
+        {% for level in log_levels %}
+        <option value="{{ level.log_level_id }}"
+            {% if filters.log_level_id == level.log_level_id|string %}selected{% endif %}>
+            {{ level.level_name }}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label>Status Code:</label>
+    <input type="number" name="status_code" value="{{ filters.status_code or '' }}">
+
+    <label>Limit:</label>
+    <input type="number" name="limit" value="{{ filters.limit }}">
+
+    <button type="submit">Filter</button>
+</form>
+
+<table>
+    <tr>
+        <th>Log ID</th>
+        <th>Time</th>
+        <th>Service Name</th>
+        <th>Level Name</th>
+        <th>Status Code</th>
+        <th>Response Time</th>
+        <th>Message</th>
+    </tr>
+
+    {% for log in logs %}
+    <tr>
+        <td><a href="/logs/{{ log.log_id }}">{{ log.log_id }}</a></td>
+        <td>{{ log.created_at }}</td>
+        <td>{{ log.service_name }}</td>
+        <td>{{ log.level_name }}</td>
+        <td>{{ log.status_code }}</td>
+        <td>{{ log.response_time_ms }} ms</td>
+        <td>{{ log.message }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
