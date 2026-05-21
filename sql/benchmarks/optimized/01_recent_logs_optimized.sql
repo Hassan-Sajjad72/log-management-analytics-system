@@ -1,7 +1,7 @@
 EXPLAIN (ANALYZE, BUFFERS)
 SELECT
     l.log_id,
-    l.created_at
+    l.created_at,
     s.service_name,
     ll.level_name,
     l.status_code,

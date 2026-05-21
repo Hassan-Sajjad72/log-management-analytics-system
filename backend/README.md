@@ -25,11 +25,13 @@ pip install -r requirements.txt
 
 ## Create `.env`:
 
+```env
 DB_HOST=localhost
 DB_NAME=log_management
 DB_USER=postgres
 DB_PASSWORD=your_password_here
 DB_PORT=5432
+```
 
 ## Run:
 
