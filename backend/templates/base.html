@@ -18,6 +18,7 @@
         <a class="nav-link {% if p == '/' %}active{% endif %}" href="/">Dashboard</a>
         <a class="nav-link {% if p.startswith('/logs') %}active{% endif %}" href="/logs">Logs</a>
         <a class="nav-link {% if p.startswith('/analytics') %}active{% endif %}" href="/analytics">Analytics</a>
+        <a class="nav-link {% if p.startswith('/analytics/olap') %}active{% endif %}" href="/analytics/olap">OLAP</a>
         <a class="nav-link {% if p.startswith('/benchmarks') %}active{% endif %}" href="/benchmarks">Benchmarks</a>
         <a class="nav-link {% if p.startswith('/techniques') %}active{% endif %}" href="/techniques">Techniques</a>
         <a class="nav-link {% if p.startswith('/services') %}active{% endif %}" href="/services">Services</a>
