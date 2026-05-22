@@ -78,6 +78,43 @@ See [docs/database_design.md](docs/database_design.md)
 
 See [docs/advanced_db_techniques.md](docs/advanced_db_techniques.md)
 
+## Backend Dashboard
+
+The project includes a Flask backend dashboard for viewing logs and analytics.
+
+### Pages
+
+- `/` - Dashboard overview
+- `/logs` - Filter and view logs
+- `/analytics` - Materialized view analytics
+- `/analytics/olap` - OLAP aggregation dashboard
+- `/techniques` - Advanced DB technique usage
+- `/benchmarks` - Benchmark results
+
+### APIs
+
+- `/api/health`
+- `/api/logs`
+- `/api/logs/<int:log_id>`
+- `/api/services`
+- `/api/analytics/summary`
+- `/api/analytics/errors-by-service`
+- `/api/analytics/endpoint-latency`
+- `/api/analytics/daily-service-activity`
+- `/api/analytics/daily-endpoint-latency`
+- `/api/analytics/status-code-distribution`
+- `/api/analytics/olap/daily-totals`
+- `/api/analytics/olap/service-summary`
+- `/api/analytics/olap/endpoint-summary`
+
+## How to Run Backend
+
+```bash
+cd backend
+venv\Scripts\activate
+python app.py
+```
+
 ## Current Status
 
 The schema, seed files, generator script, benchmark queries, and supporting documentation are in place. The project is currently in the database setup and benchmarking preparation phase.
