@@ -47,3 +47,16 @@ def fetch_one(query, params=None):
     conn.close()
 
     return row
+
+def execute_command(query):
+    # call DB connection method
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    # execute query
+    cursor.execute(query)
+    conn.commit()
+
+    # after executing query -> close DB connection
+    cursor.close()
+    conn.close()
