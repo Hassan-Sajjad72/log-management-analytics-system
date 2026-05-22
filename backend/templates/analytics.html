@@ -1,37 +1,78 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Analytics</h1>
+<h1>Analytics Dashboard</h1>
 
-<h2>Errors by Service</h2>
+<p>
+    This page reads from materialized views instead of querying raw logs directly.
+</p>
+
+<form method="POST" action="/analytics/refresh">
+    <button type="submit">Refresh Materialized Views</button>
+</form>
+
+<h2>Daily Service Activity</h2>
 
 <table>
     <tr>
-        <th>Service Name</th>
-        <th>Error Count</th>
+        <th>Day</th>
+        <th>Service</th>
+        <th>Total Logs</th>
+        <th>Error Logs</th>
+        <th>Avg Response Time</th>
     </tr>
 
-    {% for item in errors_by_service %}
+    {% for row in service_activity %}
     <tr>
-        <td>{{ item.service_name }}</td>
-        <td>{{ item.error_count }}</td>
+        <td>{{ row.day }}</td>
+        <td>{{ row.service_name }}</td>
+        <td>{{ row.total_logs }}</td>
+        <td>{{ row.error_logs }}</td>
+        <td>{{ row.avg_response_time_ms }} ms</td>
     </tr>
     {% endfor %}
 </table>
 
-<h2>Top Endpoint Latency</h2>
+<h2>Daily Endpoint Latency</h2>
 
 <table>
     <tr>
+        <th>Day</th>
         <th>Endpoint</th>
-        <th>Average Latency</th>
+        <th>Method</th>
+        <th>Request Count</th>
+        <th>Avg Response Time</th>
+        <th>Max Response Time</th>
     </tr>
 
-    {% for item in endpoint_latency %}
+    {% for row in endpoint_latency %}
     <tr>
-        <td>{{ item.endpoint_path }}</td>
-        <td>{{ item.avg_latency }} ms</td>
+        <td>{{ row.day }}</td>
+        <td>{{ row.endpoint_path }}</td>
+        <td>{{ row.request_type }}</td>
+        <td>{{ row.request_count }}</td>
+        <td>{{ row.avg_response_time_ms }} ms</td>
+        <td>{{ row.max_response_time_ms }} ms</td>
     </tr>
     {% endfor %}
 </table>
+
+<h2>Status Code Distribution</h2>
+
+<table>
+    <tr>
+        <th>Day</th>
+        <th>Status Code</th>
+        <th>Count</th>
+    </tr>
+
+    {% for row in status_distribution %}
+    <tr>
+        <td>{{ row.day }}</td>
+        <td>{{ row.status_code }}</td>
+        <td>{{ row.status_count }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
 {% endblock %}
