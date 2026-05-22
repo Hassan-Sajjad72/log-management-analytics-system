@@ -1,14 +1,50 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Advanced Database Techniques</h1>
+<h1>Database Techniques Used in Backend</h1>
 
-<ul>
-    <li><strong>Indexing:</strong> Speeds up filtering and lookup queries.</li>
-    <li><strong>Partitioning:</strong> Splits logs by date for faster time-based queries.</li>
-    <li><strong>Materialized Views:</strong> Stores precomputed analytics results.</li>
-    <li><strong>OLAP Aggregation:</strong> Supports multi-dimensional summaries.</li>
-    <li><strong>Query Optimization:</strong> Improves SQL execution plans.</li>
-    <li><strong>Concurrency Control:</strong> Handles multiple transactions safely.</li>
-</ul>
+<table>
+    <tr>
+        <th>Technique</th>
+        <th>Where It Is Used</th>
+        <th>Backend Connection</th>
+    </tr>
+
+    <tr>
+        <td>Materialized Views</td>
+        <td><code>mv_daily_service_activity</code>, <code>mv_daily_endpoint_latency</code>, <code>mv_daily_status_code_distribution</code></td>
+        <td><code>/analytics</code> and <code>/api/analytics/*</code></td>
+    </tr>
+
+    <tr>
+        <td>OLAP Aggregation</td>
+        <td><code>mv_log_olap_daily</code></td>
+        <td><code>/analytics/olap</code> and <code>/api/analytics/olap/*</code></td>
+    </tr>
+
+    <tr>
+        <td>Indexing</td>
+        <td>Indexes on logs and materialized views</td>
+        <td>Used automatically in filtered log queries and analytics queries</td>
+    </tr>
+
+    <tr>
+        <td>Partitioning</td>
+        <td><code>logs_partitioned</code></td>
+        <td>Shown through benchmark/demo endpoints, mainly useful for time-based queries</td>
+    </tr>
+
+    <tr>
+        <td>Query Optimization</td>
+        <td>Optimized SQL and precomputed summaries</td>
+        <td>Backend avoids repeated raw aggregation by using materialized views</td>
+    </tr>
+
+    <tr>
+        <td>Concurrency Control</td>
+        <td><code>sql/concurrency/</code></td>
+        <td>Documented as database transaction tests, not normal dashboard behavior</td>
+    </tr>
+</table>
+
 {% endblock %}
