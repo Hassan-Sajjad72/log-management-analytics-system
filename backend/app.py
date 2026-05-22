@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify, abort
-from db import fetch_all, fetch_one
+import analytics_queries
+from db import fetch_all, fetch_one, execute_command
 import queries
 
 app = Flask(__name__)
@@ -54,13 +55,68 @@ def services():
 
 @app.route("/analytics")
 def analytics():
-    errors_by_service = fetch_all(queries.errors_by_service_query())
-    endpoint_latency = fetch_all(queries.endpoint_latency_query())
+    service_activity = fetch_all(
+        analytics_queries.daily_service_activity_query(),
+        (20,)
+    )
+
+    endpoint_latency = fetch_all(
+        analytics_queries.daily_endpoint_latency_query(),
+        (20,)
+    )
+
+    status_distribution = fetch_all(
+        analytics_queries.daily_status_code_distribution_query(),
+        (20,)
+    )
 
     return render_template(
         "analytics.html",
-        errors_by_service=errors_by_service,
-        endpoint_latency=endpoint_latency
+        service_activity=service_activity,
+        endpoint_latency=endpoint_latency,
+        status_distribution=status_distribution
+    )
+
+@app.route("/analytics/olap")
+def olap():
+    daily_totals = fetch_all(
+        analytics_queries.olap_daily_totals_query(),
+        (20,)
+    )
+
+    service_summary = fetch_all(
+        analytics_queries.olap_service_summary_query(),
+        (20,)
+    )
+
+    endpoint_summary = fetch_all(
+        analytics_queries.olap_endpoint_summary_query(),
+        (20,)
+    )
+
+    log_level_summary = fetch_all(
+        analytics_queries.olap_log_level_summary_query(),
+        (20,)
+    )
+
+    return render_template(
+        "olap.html",
+        daily_totals=daily_totals,
+        service_summary=service_summary,
+        endpoint_summary=endpoint_summary,
+        log_level_summary=log_level_summary
+    )
+
+@app.route("/analytics/refresh", methods=["POST"])
+def refresh_analytics():
+    refresh_queries = analytics_queries.refresh_materialized_views_queries()
+
+    for query in refresh_queries:
+        execute_command(query)
+
+    return render_template(
+        "refresh_success.html",
+        message="Materialized views refreshed successfully."
     )
 
 @app.route("/benchmarks")
@@ -125,6 +181,64 @@ def api_endpoint_latency():
     data = fetch_all(queries.endpoint_latency_query())
     return jsonify(data)
 
+@app.route("/api/analytics/daily-service-activity")
+def api_daily_service_activity():
+    limit = int(request.args.get("limit", 50))
+    data = fetch_all(
+        analytics_queries.daily_service_activity_query(),
+        (limit,)
+    )
+    return jsonify(data)
+
+
+@app.route("/api/analytics/daily-endpoint-latency")
+def api_daily_endpoint_latency():
+    limit = int(request.args.get("limit", 50))
+    data = fetch_all(
+        analytics_queries.daily_endpoint_latency_query(),
+        (limit,)
+    )
+    return jsonify(data)
+
+
+@app.route("/api/analytics/status-code-distribution")
+def api_status_code_distribution():
+    limit = int(request.args.get("limit", 50))
+    data = fetch_all(
+        analytics_queries.daily_status_code_distribution_query(),
+        (limit,)
+    )
+    return jsonify(data)
+
+
+@app.route("/api/analytics/olap/daily-totals")
+def api_olap_daily_totals():
+    limit = int(request.args.get("limit", 50))
+    data = fetch_all(
+        analytics_queries.olap_daily_totals_query(),
+        (limit,)
+    )
+    return jsonify(data)
+
+
+@app.route("/api/analytics/olap/service-summary")
+def api_olap_service_summary():
+    limit = int(request.args.get("limit", 50))
+    data = fetch_all(
+        analytics_queries.olap_service_summary_query(),
+        (limit,)
+    )
+    return jsonify(data)
+
+
+@app.route("/api/analytics/olap/endpoint-summary")
+def api_olap_endpoint_summary():
+    limit = int(request.args.get("limit", 50))
+    data = fetch_all(
+        analytics_queries.olap_endpoint_summary_query(),
+        (limit,)
+    )
+    return jsonify(data)
 
 if __name__ == "__main__":
     app.run(debug=True)
