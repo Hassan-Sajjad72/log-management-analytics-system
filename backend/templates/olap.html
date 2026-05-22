@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>OLAP Aggregation</h1>
+
+<p>
+    This page reads from <code>mv_log_olap_daily</code>, which uses GROUPING SETS
+    for multi-level summaries.
+</p>
+
+<h2>Daily Totals</h2>
+
+<table>
+    <tr>
+        <th>Day</th>
+        <th>Requests</th>
+        <th>Errors</th>
+        <th>Avg Response Time</th>
+    </tr>
+
+    {% for row in daily_totals %}
+    <tr>
+        <td>{{ row.day }}</td>
+        <td>{{ row.request_count }}</td>
+        <td>{{ row.error_count }}</td>
+        <td>{{ row.avg_response_time_ms }} ms</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h2>Service Summary</h2>
+
+<table>
+    <tr>
+        <th>Day</th>
+        <th>Service</th>
+        <th>Requests</th>
+        <th>Errors</th>
+        <th>Avg Response Time</th>
+    </tr>
+
+    {% for row in service_summary %}
+    <tr>
+        <td>{{ row.day }}</td>
+        <td>{{ row.service_name }}</td>
+        <td>{{ row.request_count }}</td>
+        <td>{{ row.error_count }}</td>
+        <td>{{ row.avg_response_time_ms }} ms</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h2>Endpoint Summary</h2>
+
+<table>
+    <tr>
+        <th>Day</th>
+        <th>Endpoint</th>
+        <th>Method</th>
+        <th>Requests</th>
+        <th>Avg Response Time</th>
+    </tr>
+
+    {% for row in endpoint_summary %}
+    <tr>
+        <td>{{ row.day }}</td>
+        <td>{{ row.endpoint_path }}</td>
+        <td>{{ row.request_type }}</td>
+        <td>{{ row.request_count }}</td>
+        <td>{{ row.avg_response_time_ms }} ms</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h2>Log Level Summary</h2>
+
+<table>
+    <tr>
+        <th>Day</th>
+        <th>Level</th>
+        <th>Requests</th>
+        <th>Errors</th>
+    </tr>
+
+    {% for row in log_level_summary %}
+    <tr>
+        <td>{{ row.day }}</td>
+        <td>{{ row.level_name }}</td>
+        <td>{{ row.request_count }}</td>
+        <td>{{ row.error_count }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}
