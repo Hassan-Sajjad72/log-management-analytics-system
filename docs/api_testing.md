@@ -2,7 +2,17 @@
 
 ## Tool Used
 
-Browser
+Browser and Flask local server.
+
+## Tested Routes
+
+| Route | Type | Purpose | Status |
+|---|---|---|---|
+| `/` | Page | Dashboard overview | Working |
+| `/logs` | Page | View and filter logs | Working |
+| `/analytics` | Page | Materialized view analytics | Working |
+| `/analytics/olap` | Page | OLAP aggregation results | Working |
+| `/techniques` | Page | DB technique explanation | Working |
 
 ## Tested Endpoints
 
