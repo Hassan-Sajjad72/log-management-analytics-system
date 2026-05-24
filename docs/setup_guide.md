@@ -93,3 +93,60 @@ Verify partition pruning is active by running:
 ```powershell
 psql -h localhost -U postgres -d log_management -f sql/benchmarks/partitioning/01_partition_pruning_check.sql
 ```
+
+## Backend Dashboard Setup
+
+From the `backend/` directory:
+
+```powershell
+cd backend
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
+
+Create `backend/.env` using your local database credentials:
+
+```env
+DB_HOST=localhost
+DB_NAME=log_management
+DB_USER=postgres
+DB_PASSWORD=
+DB_PORT=5432
+```
+
+Run the Flask dashboard:
+
+```powershell
+python app.py
+```
+
+Open:
+
+```text
+http://127.0.0.1:5000
+```
+
+## Demo Checklist
+
+Before presenting, refresh analytics summaries:
+
+```powershell
+psql -h localhost -U postgres -d log_management -f sql/schema/02_refresh_materialized_views.sql
+```
+
+Then check these pages:
+
+- `http://127.0.0.1:5000/`
+- `http://127.0.0.1:5000/logs`
+- `http://127.0.0.1:5000/analytics`
+- `http://127.0.0.1:5000/analytics/olap`
+- `http://127.0.0.1:5000/techniques`
+- `http://127.0.0.1:5000/benchmarks`
+
+And these API endpoints:
+
+- `http://127.0.0.1:5000/api/health`
+- `http://127.0.0.1:5000/api/logs?limit=5`
+- `http://127.0.0.1:5000/api/analytics/daily-service-activity`
+- `http://127.0.0.1:5000/api/analytics/olap/daily-totals`

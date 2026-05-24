@@ -111,10 +111,12 @@ The project includes a Flask backend dashboard for viewing logs and analytics.
 
 ```bash
 cd backend
+python -m venv venv
 venv\Scripts\activate
+pip install -r requirements.txt
 python app.py
 ```
 
 ## Current Status
 
-The schema, seed files, generator script, benchmark queries, and supporting documentation are in place. The project is currently in the database setup and benchmarking preparation phase.
+The project is in final demo/prototype phase. The PostgreSQL schema, seed data, synthetic log generator, advanced database techniques, benchmark queries, Flask dashboard, JSON APIs, screenshots, and supporting documentation are in place.
