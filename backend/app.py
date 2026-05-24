@@ -2,8 +2,85 @@ from flask import Flask, render_template, request, jsonify, abort
 import analytics_queries
 from db import fetch_all, fetch_one, execute_command
 import queries
+import psycopg2
 
 app = Flask(__name__)
+
+MAX_LIMIT = 500
+
+def wants_json_response():
+    return request.path.startswith("/api/")
+
+def parse_int_arg(name, default=None, minimum=None, maximum=None):
+    raw_value = request.args.get(name)
+
+    if raw_value in (None, ""):
+        return default
+
+    try:
+        value = int(raw_value)
+    except ValueError:
+        raise ValueError(f"{name} must be a number.")
+
+    if minimum is not None and value < minimum:
+        raise ValueError(f"{name} must be at least {minimum}.")
+
+    if maximum is not None and value > maximum:
+        raise ValueError(f"{name} must be at most {maximum}.")
+
+    return value
+
+def log_filters_from_request(default_limit=100):
+    return {
+        "service_id": parse_int_arg("service_id", minimum=1),
+        "log_level_id": parse_int_arg("log_level_id", minimum=1),
+        "status_code": parse_int_arg("status_code", minimum=100, maximum=599),
+        "limit": parse_int_arg("limit", default_limit, minimum=1, maximum=MAX_LIMIT)
+    }
+
+def limit_from_request(default_limit=50):
+    return parse_int_arg("limit", default_limit, minimum=1, maximum=MAX_LIMIT)
+
+@app.errorhandler(ValueError)
+def handle_validation_error(error):
+    message = str(error)
+    if wants_json_response():
+        return jsonify({"error": message}), 400
+
+    return render_template(
+        "error.html",
+        title="Invalid request",
+        message=message,
+        status_code=400
+    ), 400
+
+@app.errorhandler(psycopg2.Error)
+def handle_database_error(error):
+    message = "The database request failed. Please check that PostgreSQL is running and required tables or views exist."
+    detail = error.pgerror or str(error)
+
+    if wants_json_response():
+        return jsonify({"error": message, "detail": detail}), 503
+
+    return render_template(
+        "error.html",
+        title="Database unavailable",
+        message=message,
+        detail=detail,
+        status_code=503
+    ), 503
+
+@app.errorhandler(404)
+def handle_not_found(error):
+    if wants_json_response():
+        return jsonify({"error": "Resource not found"}), 404
+
+    return render_template(
+        "error.html",
+        title="Not found",
+        message="The requested page or record was not found.",
+        status_code=404
+    ), 404
 
 @app.route('/')
 def dashboard():
@@ -18,15 +95,10 @@ def dashboard():
 
 @app.route('/logs')
 def logs():
+    filters = log_filters_from_request()
+
     services = fetch_all(queries.services_query())
     log_levels = fetch_all(queries.log_levels_query())
-
-    filters = {
-        "service_id": request.args.get("service_id"),
-        "log_level_id": request.args.get("log_level_id"),
-        "status_code": request.args.get("status_code"),
-        "limit": int(request.args.get("limit", 100))
-    }
 
     query, params = queries.filtered_logs_query(filters)
     logs_data = fetch_all(query, params)
@@ -135,12 +207,7 @@ def api_health():
 
 @app.route("/api/logs")
 def api_logs():
-    filters = {
-        "service_id": request.args.get("service_id"),
-        "log_level_id": request.args.get("log_level_id"),
-        "status_code": request.args.get("status_code"),
-        "limit": int(request.args.get("limit", 100))
-    }
+    filters = log_filters_from_request()
 
     query, params = queries.filtered_logs_query(filters)
     logs_data = fetch_all(query, params)
@@ -183,7 +250,7 @@ def api_endpoint_latency():
 
 @app.route("/api/analytics/daily-service-activity")
 def api_daily_service_activity():
-    limit = int(request.args.get("limit", 50))
+    limit = limit_from_request()
     data = fetch_all(
         analytics_queries.daily_service_activity_query(),
         (limit,)
@@ -193,7 +260,7 @@ def api_daily_service_activity():
 
 @app.route("/api/analytics/daily-endpoint-latency")
 def api_daily_endpoint_latency():
-    limit = int(request.args.get("limit", 50))
+    limit = limit_from_request()
     data = fetch_all(
         analytics_queries.daily_endpoint_latency_query(),
         (limit,)
@@ -203,7 +270,7 @@ def api_daily_endpoint_latency():
 
 @app.route("/api/analytics/status-code-distribution")
 def api_status_code_distribution():
-    limit = int(request.args.get("limit", 50))
+    limit = limit_from_request()
     data = fetch_all(
         analytics_queries.daily_status_code_distribution_query(),
         (limit,)
@@ -213,7 +280,7 @@ def api_status_code_distribution():
 
 @app.route("/api/analytics/olap/daily-totals")
 def api_olap_daily_totals():
-    limit = int(request.args.get("limit", 50))
+    limit = limit_from_request()
     data = fetch_all(
         analytics_queries.olap_daily_totals_query(),
         (limit,)
@@ -223,7 +290,7 @@ def api_olap_daily_totals():
 
 @app.route("/api/analytics/olap/service-summary")
 def api_olap_service_summary():
-    limit = int(request.args.get("limit", 50))
+    limit = limit_from_request()
     data = fetch_all(
         analytics_queries.olap_service_summary_query(),
         (limit,)
@@ -233,7 +300,7 @@ def api_olap_service_summary():
 
 @app.route("/api/analytics/olap/endpoint-summary")
 def api_olap_endpoint_summary():
-    limit = int(request.args.get("limit", 50))
+    limit = limit_from_request()
     data = fetch_all(
         analytics_queries.olap_endpoint_summary_query(),
         (limit,)

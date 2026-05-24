@@ -10,7 +10,7 @@
             <option value="">All</option>
             {% for service in services %}
             <option value="{{ service.service_id }}"
-                {% if filters.service_id == service.service_id|string %}selected{% endif %}>
+                {% if filters.service_id|string == service.service_id|string %}selected{% endif %}>
                 {{ service.service_name }}
             </option>
             {% endfor %}
@@ -23,7 +23,7 @@
             <option value="">All</option>
             {% for level in log_levels %}
             <option value="{{ level.log_level_id }}"
-                {% if filters.log_level_id == level.log_level_id|string %}selected{% endif %}>
+                {% if filters.log_level_id|string == level.log_level_id|string %}selected{% endif %}>
                 {{ level.level_name }}
             </option>
             {% endfor %}

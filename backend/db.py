@@ -18,45 +18,31 @@ def get_connection():
     )
 
 def fetch_all(query, params=None):
-
-    # call DB connection method
     conn = get_connection()
-    cursor = conn.cursor()
-
-    # execute query
-    cursor.execute(query, params or ())
-    rows = cursor.fetchall()
-
-    # after executing query -> close DB connection
-    cursor.close()
-    conn.close()
-
-    return rows
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute(query, params or ())
+            return cursor.fetchall()
+    finally:
+        conn.close()
 
 def fetch_one(query, params=None):
-    # call DB connection method
     conn = get_connection()
-    cursor = conn.cursor()
-
-    # execute query
-    cursor.execute(query, params or ())
-    row = cursor.fetchone()
-
-    # after executing query -> close DB connection
-    cursor.close()
-    conn.close()
-
-    return row
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute(query, params or ())
+            return cursor.fetchone()
+    finally:
+        conn.close()
 
 def execute_command(query):
-    # call DB connection method
     conn = get_connection()
-    cursor = conn.cursor()
-
-    # execute query
-    cursor.execute(query)
-    conn.commit()
-
-    # after executing query -> close DB connection
-    cursor.close()
-    conn.close()
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute(query)
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+
+<div class="error-panel">
+    <p>{{ message }}</p>
+
+    {% if detail %}
+    <pre>{{ detail }}</pre>
+    {% endif %}
+
+    <p class="muted">Status code: {{ status_code }}</p>
+</div>
+{% endblock %}

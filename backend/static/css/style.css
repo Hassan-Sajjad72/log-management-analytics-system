@@ -73,6 +73,24 @@ main{
 .back-btn{background:transparent;border:0;color:var(--muted);padding:8px 10px;border-radius:8px;cursor:pointer;margin-bottom:12px;font-size:14px}
 .back-btn:hover{background:rgba(15,23,42,0.04);color:#0f172a}
 
+.error-panel{
+    background:var(--card);
+    border-left:6px solid #ef4444;
+    border-radius:10px;
+    box-shadow:var(--surface-shadow);
+    padding:18px;
+}
+
+.error-panel pre{
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+    border-radius:8px;
+    color:#374151;
+    overflow:auto;
+    padding:12px;
+    white-space:pre-wrap;
+}
+
 .card{
     background:var(--card);
     padding:18px;
