@@ -65,7 +65,11 @@
 
 <div class="custom-benchmark-section">
     <div class="custom-query-input">
-        <textarea id="custom-sql-input" rows="4" spellcheck="false" placeholder="Enter your SELECT query here...">SELECT count(*) FROM logs WHERE created_at >= '2024-04-01' AND created_at < '2024-05-01';</textarea>
+        <textarea id="custom-sql-input" rows="4" spellcheck="false" placeholder="Enter your SELECT query here...">SELECT count(*) 
+FROM logs 
+WHERE created_at >= '2026-04-01' 
+  AND created_at < '2026-05-01' 
+  AND message LIKE '%error%';</textarea>
         <button id="run-custom-benchmark" class="primary-button">Run Benchmark</button>
     </div>
 
