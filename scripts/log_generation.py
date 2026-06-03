@@ -26,8 +26,9 @@ INSERT INTO logs (
     response_time_ms,
     ip_address,
     status_code,
+    metadata,
     created_at
-) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
 """
 
 def get_connection():
@@ -59,11 +60,24 @@ def load_reference_ids(cursor):
 
     return reference_ids
 
+import json
+
 def generate_log(reference_ids, live=False):
     created_at = datetime.now(timezone.utc) if live else fake.date_time_between(
         start_date='-867d',
         end_date='now'
     )
+
+    metadata = {
+        "browser": random.choice(["Chrome", "Firefox", "Safari", "Edge", "Postman", "cURL"]),
+        "client_version": f"{random.randint(1,10)}.{random.randint(0,5)}.{random.randint(0,9)}",
+        "session_id": str(uuid.uuid4())[:8],
+        "datacenter": random.choice(["us-east-1", "eu-west-1", "ap-south-1", "us-west-2"])
+    }
+    
+    # 20% chance to have a trace_id for simulated distributed tracing
+    if random.random() < 0.2:
+        metadata["trace_id"] = str(uuid.uuid4())
 
     return (
         str(uuid.uuid4()),
@@ -78,6 +92,7 @@ def generate_log(reference_ids, live=False):
         random.randint(50, 5000),
         fake.ipv4(),
         random.randint(200, 500),
+        json.dumps(metadata),
         created_at
     )
 

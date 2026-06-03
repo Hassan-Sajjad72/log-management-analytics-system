@@ -5,6 +5,9 @@
 CREATE INDEX IF NOT EXISTS idx_log_created_at
     ON logs (created_at DESC);
 
+-- For JSONB metadata searching
+CREATE INDEX IF NOT EXISTS idx_logs_metadata ON logs USING gin(metadata);
+
 -- Single-column index on log_level_id for severity filtering
 CREATE INDEX IF NOT EXISTS idx_log_log_level_id
     ON logs (log_level_id);

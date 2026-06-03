@@ -21,6 +21,7 @@ CREATE TABLE logs (
     response_time_ms INT CHECK (response_time_ms >= 0),
     ip_address  INET,
     status_code INT NOT NULL CHECK (status_code BETWEEN 100 AND 599),
+    metadata JSONB,
     created_at  TIMESTAMPTZ NOT NULL,
     PRIMARY KEY (log_id, created_at)
 ) PARTITION BY RANGE (created_at);
