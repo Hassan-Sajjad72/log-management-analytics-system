@@ -37,12 +37,6 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
                         Metrics
                     </a>
-                    {% else %}
-                    <a class="nav-item nav-item-locked" href="/analytics" title="Admin only">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-                        Metrics
-                        <span class="nav-lock-badge">Admin</span>
-                    </a>
                     {% endif %}
                 </div>
 
@@ -56,12 +50,6 @@
                     <a class="nav-item {% if p.startswith('/analytics/olap') %}active{% endif %}" href="/analytics/olap">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
                         OLAP Cubes
-                    </a>
-                    {% else %}
-                    <a class="nav-item nav-item-locked" href="/analytics/olap" title="Admin only">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
-                        OLAP Cubes
-                        <span class="nav-lock-badge">Admin</span>
                     </a>
                     {% endif %}
                     <a class="nav-item {% if p.startswith('/benchmarks') %}active{% endif %}" href="/benchmarks">
