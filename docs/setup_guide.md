@@ -66,19 +66,34 @@ psql -h localhost -U postgres -d log_management -f sql/seed/seed_api_endpoints.s
 python scripts/generate_logs.py
 ```
 
-4. Create the materialized views for dashboard-style analytics:
+4. To simulate live logs during a dashboard demo, run this in a separate terminal:
+
+```powershell
+python scripts/simulate_live_logs.py
+```
+
+Optional settings:
+
+```powershell
+$env:LIVE_BATCH_SIZE=50
+$env:LIVE_INTERVAL_SECONDS=2
+$env:LIVE_MAX_BATCHES=0
+python scripts/simulate_live_logs.py
+```
+
+5. Create the materialized views for dashboard-style analytics:
 
 ```powershell
 psql -h localhost -U postgres -d log_management -f sql/schema/01_create_materialized_views.sql
 ```
 
-5. After loading more logs later, refresh the summaries:
+6. After loading more logs later, refresh the summaries:
 
 ```powershell
 psql -h localhost -U postgres -d log_management -f sql/schema/02_refresh_materialized_views.sql
 ```
 
-6. If you run into Python module errors, ensure the virtualenv is activated and packages from `requirements.txt` are installed.
+7. If you run into Python module errors, ensure the virtualenv is activated and packages from `requirements.txt` are installed.
 
 ## Applying Partitioning
 

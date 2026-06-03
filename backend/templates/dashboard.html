@@ -5,56 +5,77 @@
     Dashboard
 </h1>
 
+<div class="live-toolbar">
+    <div class="live-copy">
+        <span class="live-dot" aria-hidden="true"></span>
+        <div>
+            <strong>Live stream</strong>
+            <span id="live-status" class="muted">Waiting for first update...</span>
+        </div>
+    </div>
+
+    <div class="live-controls">
+        <span id="live-new-count" class="live-chip">0 new logs this session</span>
+        <span id="live-countdown" class="live-chip">Next refresh soon</span>
+        <button id="live-toggle" class="ghost-button" type="button">Pause</button>
+    </div>
+</div>
+
 <div class="cards">
-    <div class="card">
+    <div class="card" data-summary-key="total_logs">
         <h3>Total Logs</h3>
         <p>{{ summary.total_logs }}</p>
     </div>
 
-    <div class="card">
+    <div class="card" data-summary-key="server_errors">
         <h3>Server Errors</h3>
         <p>{{ summary.server_errors }}</p>
     </div>
 
-    <div class="card">
+    <div class="card" data-summary-key="client_errors">
         <h3>Client Errors</h3>
         <p>{{ summary.client_errors }}</p>
     </div>
 
-    <div class="card">
+    <div class="card" data-summary-key="successful_requests">
         <h3>Successful Requests</h3>
         <p>{{ summary.successful_requests }}</p>
     </div>
 
-    <div class="card">
+    <div class="card" data-summary-key="redirects">
         <h3>Redirects</h3>
         <p>{{ summary.redirects }}</p>
     </div>
 
-    <div class="card">
+    <div class="card" data-summary-key="unknown_status">
         <h3>Unknown Status</h3>
         <p>{{ summary.unknown_status }}</p>
     </div>
 
-    <div class="card">
+    <div class="card" data-summary-key="avg_response_time" data-suffix=" ms">
         <h3>Avg Response Time</h3>
         <p>{{ summary.avg_response_time }} ms</p>
     </div>
 </div>
 
 <h2>Recent Logs</h2>
+<p class="muted">
+    Run <code>python scripts/simulate_live_logs.py</code> in another terminal. This table now polls every second and flashes incoming rows.
+</p>
 
-<table>
-    <tr>
-        <th>Log ID</th>
-        <th>Time</th>
-        <th>Service Name</th>
-        <th>Level Name</th>
-        <th>Status Code</th>
-        <th>Response Time</th>
-        <th>Message</th>
-    </tr>
-
+<table id="recent-logs-table">
+    <thead>
+        <tr>
+            <th>Log ID</th>
+            <th>Time</th>
+            <th>Service Name</th>
+            <th>Level Name</th>
+            <th>Status Code</th>
+            <th>Response Time</th>
+            <th>Message</th>
+        </tr>
+    </thead>
+    <tbody id="recent-logs-body">
     {% for log in recent_logs %}
     <tr class="clickable-row" data-href="/logs/{{ log.log_id }}" role="link" tabindex="0">
         <td><a href="/logs/{{ log.log_id }}">{{ log.log_id }}</a></td>
@@ -66,12 +87,24 @@
         <td class="message-cell" data-full="{{ log.message | e }}">{{ log.message }}</td>
     </tr>
     {% endfor %}
+    </tbody>
 </table>
 <div id="tooltip" class="tooltip" aria-hidden="true"></div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function(){
     var tooltip = document.getElementById('tooltip');
+    var recentLogsBody = document.getElementById('recent-logs-body');
+    var liveStatus = document.getElementById('live-status');
+    var liveNewCount = document.getElementById('live-new-count');
+    var liveCountdown = document.getElementById('live-countdown');
+    var liveToggle = document.getElementById('live-toggle');
+    var latestSeenLogId = getCurrentLatestLogId();
+    var refreshDelayMs = 1000;
+    var refreshTimer = null;
+    var nextRefreshAt = null;
+    var liveEnabled = true;
+    var newLogsThisSession = 0;
 
     function showTooltip(text, e){
         if(!text) return;
@@ -92,26 +125,178 @@ document.addEventListener('DOMContentLoaded', function(){
         tooltip.setAttribute('aria-hidden', 'true');
     }
 
-    // Make rows clickable and keyboard accessible
-    document.querySelectorAll('.clickable-row').forEach(function(row){
+    function bindRowEvents(row){
         row.addEventListener('click', function(){ window.location = row.dataset.href; });
         row.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' ') { window.location = row.dataset.href; } });
 
-        // If the row contains a message cell, show tooltip when hovering row
         var msgCell = row.querySelector('.message-cell');
         if(msgCell){
             row.addEventListener('mouseenter', function(e){ showTooltip(msgCell.dataset.full || msgCell.textContent, e); });
             row.addEventListener('mousemove', moveTooltip);
             row.addEventListener('mouseleave', hideTooltip);
         }
+    }
+
+    function bindTableEvents(){
+        document.querySelectorAll('#recent-logs-body .clickable-row').forEach(bindRowEvents);
+    }
+
+    function getCurrentLatestLogId(){
+        var firstLink = document.querySelector('#recent-logs-body tr:first-child a');
+        return firstLink ? Number(firstLink.textContent) : 0;
+    }
+
+    function escapeHtml(value){
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+    }
+
+    function formatNumber(value){
+        if(value === null || value === undefined || value === ''){
+            return '0';
+        }
+
+        var numberValue = Number(value);
+        if(Number.isNaN(numberValue)){
+            return value;
+        }
+
+        return numberValue.toLocaleString();
+    }
+
+    function formatSummaryValue(value, suffix){
+        if(value === null || value === undefined){
+            return '0' + suffix;
+        }
+        return formatNumber(value) + suffix;
+    }
+
+    function formatTimestamp(value){
+        var date = new Date(value);
+
+        if(Number.isNaN(date.getTime())){
+            return value;
+        }
+
+        return date.toLocaleString();
+    }
+
+    function renderSummary(summary){
+        document.querySelectorAll('[data-summary-key]').forEach(function(card){
+            var key = card.dataset.summaryKey;
+            var suffix = card.dataset.suffix || '';
+            var valueNode = card.querySelector('p');
+            var nextValue = formatSummaryValue(summary[key], suffix);
+
+            if(valueNode.textContent !== nextValue){
+                valueNode.textContent = nextValue;
+                card.classList.remove('pulse');
+                void card.offsetWidth;
+                card.classList.add('pulse');
+            }
+        });
+    }
+
+    function renderLogs(logs, newLogCount){
+        var previousLatestLogId = latestSeenLogId;
+        recentLogsBody.innerHTML = logs.map(function(log){
+            var isNew = Number(log.log_id) > previousLatestLogId;
+            return `
+                <tr class="clickable-row ${isNew ? 'new-row' : ''}" data-href="/logs/${log.log_id}" role="link" tabindex="0">
+                    <td><a href="/logs/${log.log_id}">${log.log_id}</a></td>
+                    <td>${escapeHtml(formatTimestamp(log.created_at))}</td>
+                    <td>${escapeHtml(log.service_name)}</td>
+                    <td>${escapeHtml(log.level_name)}</td>
+                    <td>${escapeHtml(log.status_code)}</td>
+                    <td>${escapeHtml(log.response_time_ms)} ms</td>
+                    <td class="message-cell" data-full="${escapeHtml(log.message)}">${escapeHtml(log.message)}</td>
+                </tr>
+            `;
+        }).join('');
+
+        latestSeenLogId = logs.length ? Number(logs[0].log_id) : latestSeenLogId;
+        newLogsThisSession += Number(newLogCount || 0);
+        liveNewCount.textContent = formatNumber(newLogsThisSession) + ' new logs this session';
+        liveNewCount.classList.remove('is-hot');
+
+        if(Number(newLogCount || 0) > 0){
+            void liveNewCount.offsetWidth;
+            liveNewCount.classList.add('is-hot');
+        }
+
+        bindTableEvents();
+    }
+
+    function scheduleRefresh(){
+        clearTimeout(refreshTimer);
+
+        if(!liveEnabled){
+            nextRefreshAt = null;
+            liveCountdown.textContent = 'Paused';
+            return;
+        }
+
+        nextRefreshAt = Date.now() + refreshDelayMs;
+        refreshTimer = setTimeout(refreshDashboard, refreshDelayMs);
+    }
+
+    function updateCountdown(){
+        if(!liveEnabled || !nextRefreshAt){
+            return;
+        }
+
+        var seconds = Math.max(0, Math.ceil((nextRefreshAt - Date.now()) / 1000));
+        liveCountdown.textContent = 'Next refresh in ' + seconds + 's';
+    }
+
+    async function refreshDashboard(){
+        if(!liveEnabled){
+            return;
+        }
+
+        liveStatus.textContent = 'Syncing...';
+
+        try{
+            var response = await fetch('/api/dashboard/live?limit=12&after_log_id=' + latestSeenLogId);
+
+            if(!response.ok){
+                throw new Error('Dashboard refresh failed');
+            }
+
+            var payload = await response.json();
+            renderSummary(payload.summary);
+            renderLogs(payload.recent_logs, payload.new_log_count);
+            liveStatus.textContent = 'Updated ' + new Date().toLocaleTimeString();
+            liveStatus.classList.remove('live-error');
+        }catch(error){
+            liveStatus.textContent = 'Live update failed, retrying...';
+            liveStatus.classList.add('live-error');
+        }finally{
+            scheduleRefresh();
+        }
+    }
+
+    liveToggle.addEventListener('click', function(){
+        liveEnabled = !liveEnabled;
+        liveToggle.textContent = liveEnabled ? 'Pause' : 'Resume';
+        liveStatus.textContent = liveEnabled ? 'Resuming...' : 'Paused';
+
+        if(liveEnabled){
+            refreshDashboard();
+        }else{
+            clearTimeout(refreshTimer);
+            nextRefreshAt = null;
+            liveCountdown.textContent = 'Paused';
+        }
     });
 
-    // Keep existing behavior for direct message-cell hover (useful if message is long and column visible)
-    document.querySelectorAll('.message-cell').forEach(function(cell){
-        cell.addEventListener('mouseenter', function(e){ showTooltip(cell.dataset.full || cell.textContent, e); });
-        cell.addEventListener('mousemove', moveTooltip);
-        cell.addEventListener('mouseleave', hideTooltip);
-    });
+    bindTableEvents();
+    refreshDashboard();
+    setInterval(updateCountdown, 250);
 });
 </script>
 {% endblock %}

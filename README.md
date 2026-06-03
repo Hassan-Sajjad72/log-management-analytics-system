@@ -12,6 +12,7 @@ The project addresses the difficulty of managing high-volume logs that grow quic
 
 - Normalized schema for logs and reference tables
 - Synthetic log generation for large-scale testing
+- Live log ingestion simulation for dashboard demos
 - Seed data for reference entities
 - Benchmark queries and results for performance comparison
 - Documentation for database design, setup, and advanced techniques
@@ -35,6 +36,8 @@ The project addresses the difficulty of managing high-volume logs that grow quic
 ## Folder Structure
 
 - `scripts/` - log generation script
+  - `generate_logs.py` - bulk synthetic log generation
+  - `simulate_live_logs.py` - continuous live log ingestion simulator
 - `sql/schema/` - table definitions and master schema file
   - `04_create_indexes.sql` - index creation for optimization
   - `05_create_partitioned_logs.sql` - partitioned table setup
@@ -116,6 +119,20 @@ venv\Scripts\activate
 pip install -r requirements.txt
 python app.py
 ```
+
+## How to Simulate Live Logs
+
+Run this in a separate terminal from the project root while the backend dashboard is open:
+
+```bash
+python scripts/simulate_live_logs.py
+```
+
+Optional environment variables:
+
+- `LIVE_BATCH_SIZE` - logs inserted per batch, default `50`
+- `LIVE_INTERVAL_SECONDS` - delay between batches, default `2`
+- `LIVE_MAX_BATCHES` - stop after this many batches, default `0` for continuous mode
 
 ## Current Status
 

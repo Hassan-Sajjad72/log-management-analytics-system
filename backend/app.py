@@ -236,6 +236,27 @@ def api_analytics_summary():
     summary = fetch_one(queries.dashboard_summary_query())
     return jsonify(summary)
 
+@app.route("/api/dashboard/recent-logs")
+def api_dashboard_recent_logs():
+    limit = limit_from_request(10)
+    data = fetch_all(queries.recent_logs_query(), (limit,))
+    return jsonify(data)
+
+@app.route("/api/dashboard/live")
+def api_dashboard_live():
+    limit = limit_from_request(12)
+    after_log_id = parse_int_arg("after_log_id", 0, minimum=0)
+
+    summary = fetch_one(queries.dashboard_summary_query())
+    recent_logs = fetch_all(queries.recent_logs_query(), (limit,))
+    new_logs = fetch_one(queries.new_logs_count_query(), (after_log_id,))
+
+    return jsonify({
+        "summary": summary,
+        "recent_logs": recent_logs,
+        "new_log_count": new_logs["new_log_count"]
+    })
+
 
 @app.route("/api/analytics/errors-by-service")
 def api_errors_by_service():

@@ -30,6 +30,13 @@ def recent_logs_query():
         LIMIT %s;
     """
 
+def new_logs_count_query():
+    return """
+        SELECT COUNT(*) AS new_log_count
+        FROM logs
+        WHERE log_id > %s;
+    """
+
 def services_query():
     return """
         SELECT service_id, service_name, owner_team
