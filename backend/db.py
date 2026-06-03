@@ -21,7 +21,10 @@ def fetch_all(query, params=None):
     conn = get_connection()
     try:
         with conn.cursor() as cursor:
-            cursor.execute(query, params or ())
+            if params is not None:
+                cursor.execute(query, params)
+            else:
+                cursor.execute(query)
             return cursor.fetchall()
     finally:
         conn.close()
@@ -30,7 +33,10 @@ def fetch_one(query, params=None):
     conn = get_connection()
     try:
         with conn.cursor() as cursor:
-            cursor.execute(query, params or ())
+            if params is not None:
+                cursor.execute(query, params)
+            else:
+                cursor.execute(query)
             return cursor.fetchone()
     finally:
         conn.close()
