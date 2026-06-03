@@ -1,95 +1,118 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>OLAP Aggregation</h1>
+<div style="margin-bottom: 24px;">
+    <h1 class="page-title" style="margin-bottom: 4px;">OLAP Aggregation Cubes</h1>
+    <p class="muted" style="margin: 0; font-size: 13px;">This page reads from <code>mv_log_olap_daily</code>, utilizing PostgreSQL GROUPING SETS for high-performance multi-level summaries.</p>
+</div>
 
-<p>
-    This page reads from <code>mv_log_olap_daily</code>, which uses GROUPING SETS
-    for multi-level summaries.
-</p>
+<h2 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 12px;">Daily Totals</h2>
+<div class="table-container" style="margin-bottom: 32px;">
+    <table>
+        <thead>
+            <tr>
+                <th>Day</th>
+                <th style="text-align: right;">Requests</th>
+                <th style="text-align: right;">Errors</th>
+                <th style="text-align: right;">Avg Latency</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in daily_totals %}
+            <tr>
+                <td style="font-weight: 500;">{{ row.day }}</td>
+                <td style="text-align: right; font-feature-settings: 'tnum';">{{ row.request_count }}</td>
+                <td style="text-align: right; font-feature-settings: 'tnum';">{{ row.error_count }}</td>
+                <td style="text-align: right; font-feature-settings: 'tnum';">{{ row.avg_response_time_ms }} ms</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
-<h2>Daily Totals</h2>
+<h2 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 12px;">Service Summary</h2>
+<div class="table-container" style="margin-bottom: 32px;">
+    <table>
+        <thead>
+            <tr>
+                <th>Day</th>
+                <th>Service</th>
+                <th style="text-align: right;">Requests</th>
+                <th style="text-align: right;">Errors</th>
+                <th style="text-align: right;">Avg Latency</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in service_summary %}
+            <tr>
+                <td>{{ row.day }}</td>
+                <td style="font-weight: 500;">{{ row.service_name }}</td>
+                <td style="text-align: right; font-feature-settings: 'tnum';">{{ row.request_count }}</td>
+                <td style="text-align: right; font-feature-settings: 'tnum';">
+                    {% if row.error_count > 0 %}
+                    <span class="live-chip is-hot" style="background-color: #fef2f2; color: #991b1b; border-color: #fecaca;">{{ row.error_count }}</span>
+                    {% else %}
+                    <span class="muted">0</span>
+                    {% endif %}
+                </td>
+                <td style="text-align: right; font-feature-settings: 'tnum';">{{ row.avg_response_time_ms }} ms</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
-<table>
-    <tr>
-        <th>Day</th>
-        <th>Requests</th>
-        <th>Errors</th>
-        <th>Avg Response Time</th>
-    </tr>
+<h2 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 12px;">Endpoint Summary</h2>
+<div class="table-container" style="margin-bottom: 32px;">
+    <table>
+        <thead>
+            <tr>
+                <th>Day</th>
+                <th>Method</th>
+                <th>Endpoint</th>
+                <th style="text-align: right;">Requests</th>
+                <th style="text-align: right;">Avg Latency</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in endpoint_summary %}
+            <tr>
+                <td>{{ row.day }}</td>
+                <td><span style="font-family: monospace; font-size: 12px; background: var(--bg-hover); padding: 2px 6px; border-radius: 4px;">{{ row.request_type }}</span></td>
+                <td>{{ row.endpoint_path }}</td>
+                <td style="text-align: right; font-feature-settings: 'tnum';">{{ row.request_count }}</td>
+                <td style="text-align: right; font-feature-settings: 'tnum';">{{ row.avg_response_time_ms }} ms</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
-    {% for row in daily_totals %}
-    <tr>
-        <td>{{ row.day }}</td>
-        <td>{{ row.request_count }}</td>
-        <td>{{ row.error_count }}</td>
-        <td>{{ row.avg_response_time_ms }} ms</td>
-    </tr>
-    {% endfor %}
-</table>
-
-<h2>Service Summary</h2>
-
-<table>
-    <tr>
-        <th>Day</th>
-        <th>Service</th>
-        <th>Requests</th>
-        <th>Errors</th>
-        <th>Avg Response Time</th>
-    </tr>
-
-    {% for row in service_summary %}
-    <tr>
-        <td>{{ row.day }}</td>
-        <td>{{ row.service_name }}</td>
-        <td>{{ row.request_count }}</td>
-        <td>{{ row.error_count }}</td>
-        <td>{{ row.avg_response_time_ms }} ms</td>
-    </tr>
-    {% endfor %}
-</table>
-
-<h2>Endpoint Summary</h2>
-
-<table>
-    <tr>
-        <th>Day</th>
-        <th>Endpoint</th>
-        <th>Method</th>
-        <th>Requests</th>
-        <th>Avg Response Time</th>
-    </tr>
-
-    {% for row in endpoint_summary %}
-    <tr>
-        <td>{{ row.day }}</td>
-        <td>{{ row.endpoint_path }}</td>
-        <td>{{ row.request_type }}</td>
-        <td>{{ row.request_count }}</td>
-        <td>{{ row.avg_response_time_ms }} ms</td>
-    </tr>
-    {% endfor %}
-</table>
-
-<h2>Log Level Summary</h2>
-
-<table>
-    <tr>
-        <th>Day</th>
-        <th>Level</th>
-        <th>Requests</th>
-        <th>Errors</th>
-    </tr>
-
-    {% for row in log_level_summary %}
-    <tr>
-        <td>{{ row.day }}</td>
-        <td>{{ row.level_name }}</td>
-        <td>{{ row.request_count }}</td>
-        <td>{{ row.error_count }}</td>
-    </tr>
-    {% endfor %}
-</table>
-
+<h2 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 12px;">Log Level Summary</h2>
+<div class="table-container" style="margin-bottom: 32px;">
+    <table>
+        <thead>
+            <tr>
+                <th>Day</th>
+                <th>Level</th>
+                <th style="text-align: right;">Requests</th>
+                <th style="text-align: right;">Errors</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in log_level_summary %}
+            <tr>
+                <td>{{ row.day }}</td>
+                <td>
+                    <span class="live-chip {% if row.level_name == 'ERROR' or row.level_name == 'CRITICAL' %}is-hot{% endif %}">
+                        {{ row.level_name }}
+                    </span>
+                </td>
+                <td style="text-align: right; font-feature-settings: 'tnum';">{{ row.request_count }}</td>
+                <td style="text-align: right; font-feature-settings: 'tnum';">{{ row.error_count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

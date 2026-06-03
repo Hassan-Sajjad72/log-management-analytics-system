@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Logs</h1>
+<h1 class="page-title">Log Explorer</h1>
 
 <form method="GET" action="/logs">
     <div class="form-group">
         <label for="service_id">Service</label>
         <select id="service_id" name="service_id">
-            <option value="">All</option>
+            <option value="">All Services</option>
             {% for service in services %}
             <option value="{{ service.service_id }}"
                 {% if filters.service_id|string == service.service_id|string %}selected{% endif %}>
@@ -18,9 +18,9 @@
     </div>
 
     <div class="form-group">
-        <label for="log_level_id">Log Level</label>
+        <label for="log_level_id">Level</label>
         <select id="log_level_id" name="log_level_id">
-            <option value="">All</option>
+            <option value="">All Levels</option>
             {% for level in log_levels %}
             <option value="{{ level.log_level_id }}"
                 {% if filters.log_level_id|string == level.log_level_id|string %}selected{% endif %}>
@@ -30,43 +30,59 @@
         </select>
     </div>
 
-    <div class="form-group">
-        <label for="status_code">Status Code</label>
-        <input id="status_code" type="number" name="status_code" value="{{ filters.status_code or '' }}">
+    <div class="form-group" style="min-width: 120px;">
+        <label for="status_code">Status</label>
+        <input id="status_code" type="number" name="status_code" placeholder="e.g. 500" value="{{ filters.status_code or '' }}">
     </div>
 
-    <div class="form-group">
+    <div class="form-group" style="min-width: 100px;">
         <label for="limit">Limit</label>
         <input id="limit" type="number" name="limit" value="{{ filters.limit }}">
     </div>
 
-    <div class="form-group">
-        <label>&nbsp;</label>
-        <button type="submit">Filter</button>
+    <div class="form-group" style="flex: 0 0 auto; justify-content: flex-end;">
+        <button type="submit" class="primary-button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+            Apply Filters
+        </button>
     </div>
 </form>
 
-<table>
-    <tr>
-        <th>Log ID</th>
-        <th>Time</th>
-        <th>Service Name</th>
-        <th>Level Name</th>
-        <th>Status Code</th>
-        <th>Response Time</th>
-        <th>Message</th>
-    </tr>
-
-    {% for log in logs %}
-    <tr>
-        <td><a href="/logs/{{ log.log_id }}">{{ log.log_id }}</a></td>
-        <td>{{ log.created_at }}</td>
-        <td>{{ log.service_name }}</td>
-        <td>{{ log.level_name }}</td>
-        <td>{{ log.status_code }}</td>
-        <td>{{ log.response_time_ms }} ms</td>
-        <td>{{ log.message }}</td>
-    </tr>
-    {% endfor %}
-</table>
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Timestamp</th>
+                <th>Service</th>
+                <th>Level</th>
+                <th>Status</th>
+                <th>Latency</th>
+                <th>Message</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td><a href="/logs/{{ log.log_id }}">#{{ log.log_id }}</a></td>
+                <td style="white-space: nowrap;">{{ log.created_at.strftime('%Y-%m-%d %H:%M:%S') if log.created_at else log.created_at }}</td>
+                <td>{{ log.service_name }}</td>
+                <td>
+                    <span class="live-chip {% if log.level_name == 'ERROR' or log.level_name == 'CRITICAL' %}is-hot{% endif %}">
+                        {{ log.level_name }}
+                    </span>
+                </td>
+                <td style="font-feature-settings: 'tnum';">{{ log.status_code }}</td>
+                <td style="font-feature-settings: 'tnum';">{{ log.response_time_ms }}ms</td>
+                <td style="max-width: 400px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ log.message }}">{{ log.message }}</td>
+            </tr>
+            {% endfor %}
+            {% if not logs %}
+            <tr>
+                <td colspan="7" style="text-align: center; padding: 40px; color: var(--text-tertiary);">No logs match your current filters.</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

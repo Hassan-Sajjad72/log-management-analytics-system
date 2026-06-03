@@ -1,78 +1,98 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Analytics Dashboard</h1>
+<div class="live-toolbar" style="margin-bottom: 24px;">
+    <div>
+        <h1 class="page-title" style="margin-bottom: 4px;">Materialized Analytics</h1>
+        <p class="muted" style="margin: 0; font-size: 13px;">This dashboard reads from highly optimized materialized views instead of querying raw logs directly.</p>
+    </div>
+    <form method="POST" action="/analytics/refresh" style="margin: 0; padding: 0; background: transparent; border: none; box-shadow: none;">
+        <button type="submit" class="ghost-button" style="display: flex; align-items: center; gap: 6px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+            Refresh Data
+        </button>
+    </form>
+</div>
 
-<p>
-    This page reads from materialized views instead of querying raw logs directly.
-</p>
+<h2 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 12px;">Daily Service Activity</h2>
+<div class="table-container" style="margin-bottom: 32px;">
+    <table>
+        <thead>
+            <tr>
+                <th>Day</th>
+                <th>Service</th>
+                <th style="text-align: right;">Total Logs</th>
+                <th style="text-align: right;">Error Logs</th>
+                <th style="text-align: right;">Avg Latency</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in service_activity %}
+            <tr>
+                <td>{{ row.day }}</td>
+                <td style="font-weight: 500;">{{ row.service_name }}</td>
+                <td style="text-align: right; font-feature-settings: 'tnum';">{{ row.total_logs }}</td>
+                <td style="text-align: right; font-feature-settings: 'tnum';">
+                    <span class="live-chip {% if row.error_logs > 0 %}is-hot{% endif %}" style="{% if row.error_logs > 0 %}background-color: #fef2f2; color: #991b1b; border-color: #fecaca;{% else %}background-color: transparent; border: none; padding: 0;{% endif %}">
+                        {{ row.error_logs }}
+                    </span>
+                </td>
+                <td style="text-align: right; font-feature-settings: 'tnum';">{{ row.avg_response_time_ms }} ms</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
-<form method="POST" action="/analytics/refresh">
-    <button type="submit">Refresh Materialized Views</button>
-</form>
+<h2 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 12px;">Daily Endpoint Latency</h2>
+<div class="table-container" style="margin-bottom: 32px;">
+    <table>
+        <thead>
+            <tr>
+                <th>Day</th>
+                <th>Method</th>
+                <th>Endpoint</th>
+                <th style="text-align: right;">Requests</th>
+                <th style="text-align: right;">Avg Latency</th>
+                <th style="text-align: right;">Max Latency</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in endpoint_latency %}
+            <tr>
+                <td>{{ row.day }}</td>
+                <td><span style="font-family: monospace; font-size: 12px; background: var(--bg-hover); padding: 2px 6px; border-radius: 4px;">{{ row.request_type }}</span></td>
+                <td>{{ row.endpoint_path }}</td>
+                <td style="text-align: right; font-feature-settings: 'tnum';">{{ row.request_count }}</td>
+                <td style="text-align: right; font-feature-settings: 'tnum';">{{ row.avg_response_time_ms }} ms</td>
+                <td style="text-align: right; font-feature-settings: 'tnum'; color: var(--text-tertiary);">{{ row.max_response_time_ms }} ms</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
-<h2>Daily Service Activity</h2>
-
-<table>
-    <tr>
-        <th>Day</th>
-        <th>Service</th>
-        <th>Total Logs</th>
-        <th>Error Logs</th>
-        <th>Avg Response Time</th>
-    </tr>
-
-    {% for row in service_activity %}
-    <tr>
-        <td>{{ row.day }}</td>
-        <td>{{ row.service_name }}</td>
-        <td>{{ row.total_logs }}</td>
-        <td>{{ row.error_logs }}</td>
-        <td>{{ row.avg_response_time_ms }} ms</td>
-    </tr>
-    {% endfor %}
-</table>
-
-<h2>Daily Endpoint Latency</h2>
-
-<table>
-    <tr>
-        <th>Day</th>
-        <th>Endpoint</th>
-        <th>Method</th>
-        <th>Request Count</th>
-        <th>Avg Response Time</th>
-        <th>Max Response Time</th>
-    </tr>
-
-    {% for row in endpoint_latency %}
-    <tr>
-        <td>{{ row.day }}</td>
-        <td>{{ row.endpoint_path }}</td>
-        <td>{{ row.request_type }}</td>
-        <td>{{ row.request_count }}</td>
-        <td>{{ row.avg_response_time_ms }} ms</td>
-        <td>{{ row.max_response_time_ms }} ms</td>
-    </tr>
-    {% endfor %}
-</table>
-
-<h2>Status Code Distribution</h2>
-
-<table>
-    <tr>
-        <th>Day</th>
-        <th>Status Code</th>
-        <th>Count</th>
-    </tr>
-
-    {% for row in status_distribution %}
-    <tr>
-        <td>{{ row.day }}</td>
-        <td>{{ row.status_code }}</td>
-        <td>{{ row.status_count }}</td>
-    </tr>
-    {% endfor %}
-</table>
-
+<h2 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 12px;">Status Code Distribution</h2>
+<div class="table-container" style="margin-bottom: 32px;">
+    <table>
+        <thead>
+            <tr>
+                <th>Day</th>
+                <th>Status Code</th>
+                <th style="text-align: right;">Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in status_distribution %}
+            <tr>
+                <td>{{ row.day }}</td>
+                <td>
+                    <span class="live-chip" style="font-family: monospace;">{{ row.status_code }}</span>
+                </td>
+                <td style="text-align: right; font-feature-settings: 'tnum';">{{ row.status_count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

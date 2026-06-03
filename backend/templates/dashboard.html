@@ -92,37 +92,41 @@ GROUP BY service_id;</textarea>
     <div id="benchmark-error" class="live-error" style="display: none; margin-top: 1rem;"></div>
 </div>
 
-<h2>Recent Logs</h2>
-<p class="muted">
-    Run <code>python scripts/simulate_live_logs.py</code> in another terminal. This table now polls every second and flashes incoming rows.
-</p>
+<div class="live-toolbar" style="margin-top: 32px; margin-bottom: 16px;">
+    <div>
+        <h2 style="font-size: 16px; font-weight: 600; margin: 0;">Live Log Stream</h2>
+        <p class="muted" style="margin: 4px 0 0 0; font-size: 13px;">Polling every second. New rows flash upon arrival.</p>
+    </div>
+</div>
 
-<table id="recent-logs-table">
-    <thead>
-        <tr>
-            <th>Log ID</th>
-            <th>Time</th>
-            <th>Service Name</th>
-            <th>Level Name</th>
-            <th>Status Code</th>
-            <th>Response Time</th>
-            <th>Message</th>
+<div class="table-container">
+    <table id="recent-logs-table">
+        <thead>
+            <tr>
+                <th>Log ID</th>
+                <th>Time</th>
+                <th>Service Name</th>
+                <th>Level</th>
+                <th>Status</th>
+                <th>Latency</th>
+                <th>Message</th>
+            </tr>
+        </thead>
+        <tbody id="recent-logs-body">
+        {% for log in recent_logs %}
+        <tr class="clickable-row" data-href="/logs/{{ log.log_id }}" role="link" tabindex="0">
+            <td><a href="/logs/{{ log.log_id }}">{{ log.log_id }}</a></td>
+            <td>{{ log.created_at }}</td>
+            <td>{{ log.service_name }}</td>
+            <td>{{ log.level_name }}</td>
+            <td>{{ log.status_code }}</td>
+            <td>{{ log.response_time_ms }} ms</td>
+            <td class="message-cell" data-full="{{ log.message | e }}">{{ log.message }}</td>
         </tr>
-    </thead>
-    <tbody id="recent-logs-body">
-    {% for log in recent_logs %}
-    <tr class="clickable-row" data-href="/logs/{{ log.log_id }}" role="link" tabindex="0">
-        <td><a href="/logs/{{ log.log_id }}">{{ log.log_id }}</a></td>
-        <td>{{ log.created_at }}</td>
-        <td>{{ log.service_name }}</td>
-        <td>{{ log.level_name }}</td>
-        <td>{{ log.status_code }}</td>
-        <td>{{ log.response_time_ms }} ms</td>
-        <td class="message-cell" data-full="{{ log.message | e }}">{{ log.message }}</td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
 <div id="tooltip" class="tooltip" aria-hidden="true"></div>
 
 <script>

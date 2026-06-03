@@ -8,26 +8,95 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    
-    <nav>
-        {% set p = request.path %}
-        <a class="nav-brand" href="/">
-            <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="LMA" class="nav-logo">
-            <span class="project-name">LMA</span>
-        </a>
-        <a class="nav-link {% if p == '/' %}active{% endif %}" href="/">Dashboard</a>
-        <a class="nav-link {% if p.startswith('/logs') %}active{% endif %}" href="/logs">Logs</a>
-        <a class="nav-link {% if p.startswith('/analytics') %}active{% endif %}" href="/analytics">Analytics</a>
-        <a class="nav-link {% if p.startswith('/analytics/olap') %}active{% endif %}" href="/analytics/olap">OLAP</a>
-        <a class="nav-link {% if p.startswith('/benchmarks') %}active{% endif %}" href="/benchmarks">Benchmarks</a>
-        <a class="nav-link {% if p.startswith('/techniques') %}active{% endif %}" href="/techniques">Techniques</a>
-        <a class="nav-link {% if p.startswith('/services') %}active{% endif %}" href="/services">Services</a>
-    </nav>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="app-sidebar">
+            <div class="sidebar-header">
+                <a class="brand" href="/">
+                    <div class="brand-logo">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    </div>
+                    <span class="brand-text">LMA Platform</span>
+                </a>
+            </div>
 
-    <main>
-        <button id="back-btn" class="back-btn" onclick="history.back()" aria-label="Go back">← Back</button>
-        {% block content %} {% endblock %}
-    </main>
+            {% set p = request.path %}
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Workspace</div>
+                    <a class="nav-item {% if p == '/' %}active{% endif %}" href="/">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+                        Dashboard
+                    </a>
+                    <a class="nav-item {% if p.startswith('/logs') %}active{% endif %}" href="/logs">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="4" x2="14" y2="4"></line><line x1="10" y1="4" x2="3" y2="4"></line><line x1="21" y1="12" x2="12" y2="12"></line><line x1="8" y1="12" x2="3" y2="12"></line><line x1="21" y1="20" x2="16" y2="20"></line><line x1="12" y1="20" x2="3" y2="20"></line><line x1="14" y1="2" x2="14" y2="6"></line><line x1="8" y1="10" x2="8" y2="14"></line><line x1="16" y1="18" x2="16" y2="22"></line></svg>
+                        Log Explorer
+                    </a>
+                    <a class="nav-item {% if p.startswith('/analytics') and not p.startswith('/analytics/olap') %}active{% endif %}" href="/analytics">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                        Metrics
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Infrastructure</div>
+                    <a class="nav-item {% if p.startswith('/services') %}active{% endif %}" href="/services">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                        Services
+                    </a>
+                    <a class="nav-item {% if p.startswith('/analytics/olap') %}active{% endif %}" href="/analytics/olap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+                        OLAP Cubes
+                    </a>
+                    <a class="nav-item {% if p.startswith('/benchmarks') %}active{% endif %}" href="/benchmarks">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        Benchmarks
+                    </a>
+                    <a class="nav-item {% if p.startswith('/techniques') %}active{% endif %}" href="/techniques">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                        Techniques
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="avatar">U</div>
+                    <div class="user-info">
+                        <span class="user-name">User Admin</span>
+                        <span class="user-role">Workspace Owner</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="app-main">
+            <header class="app-topbar">
+                <div class="topbar-left">
+                    <button id="back-btn" class="icon-btn" onclick="history.back()" aria-label="Go back">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    </button>
+                    <!-- Simple breadcrumb placeholder, overridden by templates if needed -->
+                    <div class="breadcrumbs">
+                        <span class="breadcrumb-item current">Workspace</span>
+                    </div>
+                </div>
+                <div class="topbar-right">
+                    <button class="search-trigger">
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <span class="search-text">Search logs...</span>
+                        <kbd>⌘K</kbd>
+                    </button>
+                </div>
+            </header>
+
+            <main class="app-content">
+                {% block content %} {% endblock %}
+            </main>
+        </div>
+    </div>
+
     <script>
     document.addEventListener('DOMContentLoaded', function(){
         var btn = document.getElementById('back-btn');
@@ -35,6 +104,5 @@
         try{ if(history.length < 2){ btn.style.display = 'none'; } }catch(e){}
     });
     </script>
-    
 </body>
 </html>

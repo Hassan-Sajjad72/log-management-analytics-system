@@ -1,50 +1,50 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Database Techniques Used in Backend</h1>
+<h1 class="page-title">Database Techniques Overview</h1>
 
-<table>
-    <tr>
-        <th>Technique</th>
-        <th>Where It Is Used</th>
-        <th>Backend Connection</th>
-    </tr>
-
-    <tr>
-        <td>Materialized Views</td>
-        <td><code>mv_daily_service_activity</code>, <code>mv_daily_endpoint_latency</code>, <code>mv_daily_status_code_distribution</code></td>
-        <td><code>/analytics</code> and <code>/api/analytics/*</code></td>
-    </tr>
-
-    <tr>
-        <td>OLAP Aggregation</td>
-        <td><code>mv_log_olap_daily</code></td>
-        <td><code>/analytics/olap</code> and <code>/api/analytics/olap/*</code></td>
-    </tr>
-
-    <tr>
-        <td>Indexing</td>
-        <td>Indexes on logs and materialized views</td>
-        <td>Used automatically in filtered log queries and analytics queries</td>
-    </tr>
-
-    <tr>
-        <td>Partitioning</td>
-        <td><code>logs</code></td>
-        <td>Shown through benchmark/demo endpoints, mainly useful for time-based queries</td>
-    </tr>
-
-    <tr>
-        <td>Query Optimization</td>
-        <td>Optimized SQL and precomputed summaries</td>
-        <td>Backend avoids repeated raw aggregation by using materialized views</td>
-    </tr>
-
-    <tr>
-        <td>Concurrency Control</td>
-        <td><code>sql/concurrency/</code></td>
-        <td>Documented as database transaction tests, not normal dashboard behavior</td>
-    </tr>
-</table>
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Technique</th>
+                <th>Where It Is Used</th>
+                <th>Backend Connection</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="font-weight: 500;">Materialized Views</td>
+                <td><span style="font-family: monospace; background: var(--bg-hover); padding: 2px 4px; border-radius: 4px;">mv_daily_service_activity</span>, etc.</td>
+                <td><code>/analytics</code> endpoints</td>
+            </tr>
+            <tr>
+                <td style="font-weight: 500;">OLAP Aggregation</td>
+                <td><span style="font-family: monospace; background: var(--bg-hover); padding: 2px 4px; border-radius: 4px;">mv_log_olap_daily</span></td>
+                <td><code>/analytics/olap</code> endpoints</td>
+            </tr>
+            <tr>
+                <td style="font-weight: 500;">Indexing</td>
+                <td>Indexes on logs and materialized views</td>
+                <td>Used automatically in filtered log queries and analytics</td>
+            </tr>
+            <tr>
+                <td style="font-weight: 500;">Partitioning</td>
+                <td><span style="font-family: monospace; background: var(--bg-hover); padding: 2px 4px; border-radius: 4px;">logs</span> table</td>
+                <td>Shown through benchmark/demo endpoints</td>
+            </tr>
+            <tr>
+                <td style="font-weight: 500;">Query Optimization</td>
+                <td>Optimized SQL and precomputed summaries</td>
+                <td>Backend avoids repeated raw aggregation</td>
+            </tr>
+            <tr>
+                <td style="font-weight: 500;">Concurrency Control</td>
+                <td><code>sql/concurrency/</code></td>
+                <td>Documented as database transaction tests</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 {% endblock %}
