@@ -1,11 +1,31 @@
-from flask import Flask, render_template, request, jsonify, abort
+from flask import Flask, render_template, request, jsonify, abort, session, redirect, url_for
 import analytics_queries
 from db import fetch_all, fetch_one, execute_command
 import queries
 import psycopg2
 import re
+import os
+from werkzeug.security import check_password_hash
 
 app = Flask(__name__)
+app.secret_key = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
+
+TEAMS = [
+    {"id": "Admin",          "label": "Admin",          "icon": "shield",   "color": "#6366f1", "desc": "Full access to all logs and analytics"},
+    {"id": "Frontend Team",  "label": "Frontend Team",  "icon": "monitor",  "color": "#06b6d4", "desc": "Can only see logs from frontend services"},
+    {"id": "Backend Team",   "label": "Backend Team",   "icon": "server",   "color": "#10b981", "desc": "Can only see logs from backend services"},
+    {"id": "Database Team",  "label": "Database Team",  "icon": "database", "color": "#f59e0b", "desc": "Can only see logs from database services"},
+]
+
+def get_current_team():
+    return session.get('team', None)
+
+def require_admin():
+    """Returns a redirect response if user is not Admin, else None."""
+    team = get_current_team()
+    if team != 'Admin':
+        return render_template('forbidden.html', team=team), 403
+    return None
 
 MAX_LIMIT = 500
 
@@ -83,15 +103,46 @@ def handle_not_found(error):
         status_code=404
     ), 404
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip().lower()
+        password = request.form.get('password', '')
+
+        if not email or not password:
+            error = 'Please enter both email and password.'
+        else:
+            user = fetch_one(
+                "SELECT user_id, email, password_hash, full_name, team FROM team_users WHERE email = %s",
+                (email,)
+            )
+            if user and check_password_hash(user['password_hash'], password):
+                session['team'] = user['team']
+                session['user_name'] = user['full_name']
+                session['user_email'] = user['email']
+                return redirect(url_for('dashboard'))
+            else:
+                error = 'Invalid email or password.'
+    return render_template('login.html', error=error)
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
 @app.route('/')
 def dashboard():
+    if not get_current_team():
+        return redirect(url_for('login'))
     summary = fetch_one(queries.dashboard_summary_query())
     recent_logs = fetch_all(queries.recent_logs_query(), (10,))
 
     return render_template(
         "dashboard.html",
         summary = summary,
-        recent_logs = recent_logs
+        recent_logs = recent_logs,
+        current_team = get_current_team()
     )
 
 @app.route('/logs')
@@ -128,6 +179,9 @@ def services():
 
 @app.route("/analytics")
 def analytics():
+    guard = require_admin()
+    if guard: return guard
+
     service_activity = fetch_all(
         analytics_queries.daily_service_activity_query(),
         (20,)
@@ -152,6 +206,9 @@ def analytics():
 
 @app.route("/analytics/olap")
 def olap():
+    guard = require_admin()
+    if guard: return guard
+
     daily_totals = fetch_all(
         analytics_queries.olap_daily_totals_query(),
         (20,)
@@ -182,6 +239,9 @@ def olap():
 
 @app.route("/analytics/refresh", methods=["POST"])
 def refresh_analytics():
+    guard = require_admin()
+    if guard: return guard
+
     refresh_queries = analytics_queries.refresh_materialized_views_queries()
 
     for query in refresh_queries:

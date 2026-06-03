@@ -32,10 +32,18 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="4" x2="14" y2="4"></line><line x1="10" y1="4" x2="3" y2="4"></line><line x1="21" y1="12" x2="12" y2="12"></line><line x1="8" y1="12" x2="3" y2="12"></line><line x1="21" y1="20" x2="16" y2="20"></line><line x1="12" y1="20" x2="3" y2="20"></line><line x1="14" y1="2" x2="14" y2="6"></line><line x1="8" y1="10" x2="8" y2="14"></line><line x1="16" y1="18" x2="16" y2="22"></line></svg>
                         Log Explorer
                     </a>
+                    {% if session.get('team') == 'Admin' %}
                     <a class="nav-item {% if p.startswith('/analytics') and not p.startswith('/analytics/olap') %}active{% endif %}" href="/analytics">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
                         Metrics
                     </a>
+                    {% else %}
+                    <a class="nav-item nav-item-locked" href="/analytics" title="Admin only">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                        Metrics
+                        <span class="nav-lock-badge">Admin</span>
+                    </a>
+                    {% endif %}
                 </div>
 
                 <div class="nav-section">
@@ -44,10 +52,18 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
                         Services
                     </a>
+                    {% if session.get('team') == 'Admin' %}
                     <a class="nav-item {% if p.startswith('/analytics/olap') %}active{% endif %}" href="/analytics/olap">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
                         OLAP Cubes
                     </a>
+                    {% else %}
+                    <a class="nav-item nav-item-locked" href="/analytics/olap" title="Admin only">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+                        OLAP Cubes
+                        <span class="nav-lock-badge">Admin</span>
+                    </a>
+                    {% endif %}
                     <a class="nav-item {% if p.startswith('/benchmarks') %}active{% endif %}" href="/benchmarks">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                         Benchmarks
@@ -61,12 +77,18 @@
 
             <div class="sidebar-footer">
                 <div class="user-profile">
-                    <div class="avatar">U</div>
+                    {% set team = session.get('team', 'Guest') %}
+                    {% set user_name = session.get('user_name', 'Guest') %}
+                    {% set team_color = '#6366f1' if team == 'Admin' else '#06b6d4' if team == 'Frontend Team' else '#10b981' if team == 'Backend Team' else '#f59e0b' %}
+                    <div class="avatar" style="background: {{ team_color }}; color: white;">{{ user_name[0] }}</div>
                     <div class="user-info">
-                        <span class="user-name">User Admin</span>
-                        <span class="user-role">Workspace Owner</span>
+                        <span class="user-name">{{ user_name }}</span>
+                        <span class="user-role">{{ team }}</span>
                     </div>
                 </div>
+                <a href="/logout" class="sidebar-logout" title="Switch Role">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                </a>
             </div>
         </aside>
 
@@ -88,6 +110,15 @@
                         <span class="search-text">Search logs...</span>
                         <kbd>⌘K</kbd>
                     </button>
+                    {% set team = session.get('team', 'Guest') %}
+                    {% set team_color = '#6366f1' if team == 'Admin' else '#06b6d4' if team == 'Frontend Team' else '#10b981' if team == 'Backend Team' else '#f59e0b' %}
+                    <div class="topbar-team-badge" style="border-color: {{ team_color }}22; background: {{ team_color }}11; color: {{ team_color }};">
+                        <span class="team-dot" style="background: {{ team_color }};"></span>
+                        {{ team }}
+                        {% if team != 'Admin' %}
+                        <span class="team-rls-label">RLS Active</span>
+                        {% endif %}
+                    </div>
                 </div>
             </header>
 

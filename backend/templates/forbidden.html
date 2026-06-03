@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Access Control Demo — Row-Level Security{% endblock %}
+
+{% block content %}
+<div class="rls-forbidden-page">
+    <div class="forbidden-card">
+        <div class="forbidden-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+            </svg>
+        </div>
+        <h1>Access Denied</h1>
+        <p class="forbidden-subtitle">Row-Level Security Enforced</p>
+        <div class="rls-explanation">
+            <div class="rls-badge">PostgreSQL RLS Policy Active</div>
+            <p>
+                You are logged in as <strong class="team-highlight">{{ team or 'Guest' }}</strong>.
+                Analytics and OLAP pages query pre-computed <strong>Materialized Views</strong>, 
+                which contain aggregated data across <em>all</em> teams and cannot be filtered per-team.
+            </p>
+            <p>
+                To view the Analytics dashboard, switch to the <strong>Admin</strong> role, 
+                which has full cross-team visibility.
+            </p>
+        </div>
+        <div class="forbidden-actions">
+            <a href="{{ url_for('logout') }}" class="btn-primary">Switch Role (Logout)</a>
+            <a href="{{ url_for('dashboard') }}" class="btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+
+<style>
+.rls-forbidden-page {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.forbidden-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 48px;
+    max-width: 560px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+}
+.forbidden-icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    color: #ef4444;
+}
+.forbidden-card h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 8px;
+}
+.forbidden-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0 0 28px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+.rls-explanation {
+    background: rgba(99, 102, 241, 0.05);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    text-align: left;
+    margin-bottom: 28px;
+}
+.rls-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(99, 102, 241, 0.1);
+    color: #6366f1;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 99px;
+    margin-bottom: 12px;
+}
+.rls-explanation p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 8px 0 0;
+}
+.team-highlight { color: #6366f1; }
+.forbidden-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+.btn-primary {
+    background: linear-gradient(135deg, #6366f1, #818cf8);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+.btn-primary:hover { opacity: 0.85; }
+.btn-secondary {
+    background: var(--bg-hover);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    padding: 10px 20px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+.btn-secondary:hover { background: var(--border); }
+</style>
+{% endblock %}
