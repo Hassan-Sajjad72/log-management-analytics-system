@@ -58,6 +58,36 @@
     </div>
 </div>
 
+<h2>Interactive Custom SQL Partitioning Benchmark</h2>
+<p class="muted">
+    Type a custom <code>SELECT</code> query below. The system will automatically execute it against both the <strong>unpartitioned</strong> and <strong>partitioned</strong> log tables using <code>EXPLAIN ANALYZE</code> to compare execution times without fetching large amounts of raw data.
+</p>
+
+<div class="custom-benchmark-section">
+    <div class="custom-query-input">
+        <textarea id="custom-sql-input" rows="4" spellcheck="false" placeholder="Enter your SELECT query here...">SELECT count(*) FROM logs WHERE created_at >= '2024-04-01' AND created_at < '2024-05-01';</textarea>
+        <button id="run-custom-benchmark" class="primary-button">Run Benchmark</button>
+    </div>
+
+    <div class="benchmark-results-container">
+        <div class="benchmark-window" id="unpart-window">
+            <div class="benchmark-header">Unpartitioned Table</div>
+            <div class="benchmark-body">
+                <div class="execution-time" id="unpart-time">-- ms</div>
+                <div class="benchmark-status" id="unpart-status">Waiting...</div>
+            </div>
+        </div>
+        <div class="benchmark-window" id="part-window">
+            <div class="benchmark-header">Partitioned Table</div>
+            <div class="benchmark-body">
+                <div class="execution-time" id="part-time">-- ms</div>
+                <div class="benchmark-status" id="part-status">Waiting...</div>
+            </div>
+        </div>
+    </div>
+    <div id="benchmark-error" class="live-error" style="display: none; margin-top: 1rem;"></div>
+</div>
+
 <h2>Recent Logs</h2>
 <p class="muted">
     Run <code>python scripts/simulate_live_logs.py</code> in another terminal. This table now polls every second and flashes incoming rows.
@@ -293,6 +323,67 @@ document.addEventListener('DOMContentLoaded', function(){
             liveCountdown.textContent = 'Paused';
         }
     });
+
+    var runBenchmarkBtn = document.getElementById('run-custom-benchmark');
+    var sqlInput = document.getElementById('custom-sql-input');
+    var unpartTime = document.getElementById('unpart-time');
+    var partTime = document.getElementById('part-time');
+    var unpartStatus = document.getElementById('unpart-status');
+    var partStatus = document.getElementById('part-status');
+    var benchmarkError = document.getElementById('benchmark-error');
+    var unpartWindow = document.getElementById('unpart-window');
+    var partWindow = document.getElementById('part-window');
+
+    if(runBenchmarkBtn) {
+        runBenchmarkBtn.addEventListener('click', async function() {
+            var query = sqlInput.value;
+            if(!query.trim()) return;
+
+            runBenchmarkBtn.disabled = true;
+            runBenchmarkBtn.textContent = 'Running...';
+            benchmarkError.style.display = 'none';
+            unpartTime.textContent = '-- ms';
+            partTime.textContent = '-- ms';
+            unpartStatus.textContent = 'Executing...';
+            partStatus.textContent = 'Executing...';
+            unpartWindow.classList.remove('winner');
+            partWindow.classList.remove('winner');
+
+            try {
+                var response = await fetch('/api/benchmarks/custom-query', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: query })
+                });
+
+                var result = await response.json();
+
+                if(!response.ok) {
+                    throw new Error(result.error || 'Failed to run benchmark');
+                }
+
+                unpartTime.textContent = result.unpartitioned_ms.toFixed(2) + ' ms';
+                partTime.textContent = result.partitioned_ms.toFixed(2) + ' ms';
+                unpartStatus.textContent = 'Done';
+                partStatus.textContent = 'Done';
+
+                if (result.partitioned_ms < result.unpartitioned_ms) {
+                    partWindow.classList.add('winner');
+                } else if (result.unpartitioned_ms < result.partitioned_ms) {
+                    unpartWindow.classList.add('winner');
+                }
+
+            } catch (err) {
+                unpartStatus.textContent = 'Failed';
+                partStatus.textContent = 'Failed';
+                benchmarkError.textContent = err.message;
+                benchmarkError.style.display = 'block';
+            } finally {
+                runBenchmarkBtn.disabled = false;
+                runBenchmarkBtn.textContent = 'Run Benchmark';
+            }
+        });
+    }
 
     bindTableEvents();
     refreshDashboard();

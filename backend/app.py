@@ -3,6 +3,7 @@ import analytics_queries
 from db import fetch_all, fetch_one, execute_command
 import queries
 import psycopg2
+import re
 
 app = Flask(__name__)
 
@@ -327,6 +328,43 @@ def api_olap_endpoint_summary():
         (limit,)
     )
     return jsonify(data)
+
+@app.route("/api/benchmarks/custom-query", methods=["POST"])
+def api_benchmarks_custom_query():
+    data = request.get_json()
+    if not data or "query" not in data:
+        return jsonify({"error": "Missing query parameter"}), 400
+        
+    user_query = data["query"].strip()
+    
+    if not user_query.upper().startswith("SELECT"):
+        return jsonify({"error": "Only SELECT queries are allowed."}), 400
+        
+    partitioned_query = user_query
+    unpartitioned_query = re.sub(r'(?i)\bFROM\s+logs\b', 'FROM logs_unpartitioned', user_query)
+    
+    if unpartitioned_query == partitioned_query:
+        return jsonify({"error": "The query must select FROM the 'logs' table to run this benchmark."}), 400
+        
+    explain_part = f"EXPLAIN (ANALYZE, FORMAT JSON) {partitioned_query}"
+    explain_unpart = f"EXPLAIN (ANALYZE, FORMAT JSON) {unpartitioned_query}"
+    
+    try:
+        unpart_res = fetch_one(explain_unpart)
+        unpart_plan = unpart_res['QUERY PLAN'][0]
+        unpart_time = unpart_plan.get('Execution Time', 0)
+        
+        part_res = fetch_one(explain_part)
+        part_plan = part_res['QUERY PLAN'][0]
+        part_time = part_plan.get('Execution Time', 0)
+        
+        return jsonify({
+            "unpartitioned_ms": unpart_time,
+            "partitioned_ms": part_time,
+            "query": user_query
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 if __name__ == "__main__":
     app.run(debug=True)
