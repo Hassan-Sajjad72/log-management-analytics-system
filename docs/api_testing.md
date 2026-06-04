@@ -36,3 +36,35 @@ Browser and Flask local server.
 | `/api/analytics/olap/daily-totals` | `mv_log_olap_daily` | Daily total OLAP rows |
 | `/api/analytics/olap/service-summary` | `mv_log_olap_daily` | Service-level OLAP rows |
 | `/api/analytics/olap/endpoint-summary` | `mv_log_olap_daily` | Endpoint-level OLAP rows |
+
+## Quick curl tests
+
+Simple health check:
+
+```bash
+curl -i http://127.0.0.1:5000/api/health
+```
+
+Get logs with pagination and inspect the first entry:
+
+```bash
+curl -s "http://127.0.0.1:5000/api/logs?limit=5" | jq '.[0]'
+```
+
+Fetch analytics daily service activity:
+
+```bash
+curl -s http://127.0.0.1:5000/api/analytics/daily-service-activity | jq
+```
+
+Automated smoke test (bash):
+
+```bash
+#!/usr/bin/env bash
+set -e
+curl -f http://127.0.0.1:5000/api/health >/dev/null
+curl -f "http://127.0.0.1:5000/api/logs?limit=1" >/dev/null
+echo "API smoke tests passed"
+```
+
+If you prefer Postman, export the above requests as a collection and run with the Collection Runner.

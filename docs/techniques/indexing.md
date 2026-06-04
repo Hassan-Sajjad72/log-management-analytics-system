@@ -54,6 +54,27 @@ Indexes help by letting PostgreSQL jump directly to the relevant rows:
 
 Because these access paths align with the query predicates, PostgreSQL can avoid broad sequential scans and reduce sorting work.
 
+## Example (create index + test query)
+
+Create a descending time index for recent-log queries:
+
+```sql
+CREATE INDEX idx_log_created_at ON logs (created_at DESC);
+```
+
+Test with an example query and `EXPLAIN ANALYZE` to confirm the index is used:
+
+```sql
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT *
+FROM logs
+WHERE created_at >= now() - interval '1 day'
+ORDER BY created_at DESC
+LIMIT 100;
+```
+
+Compare `EXPLAIN ANALYZE` output before and after creating the index and review whether the plan uses an "Index Scan" or "Index Only Scan".
+
 ## Performance Improvement
 
 The biggest gain came from the recent-log query that filters by date and sorts by newest records first. With the index in place, PostgreSQL can satisfy that query much more efficiently than scanning the whole table.

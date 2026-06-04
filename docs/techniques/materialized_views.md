@@ -28,6 +28,9 @@ These were added in:
 - [sql/schema/01_create_materialized_views.sql](/D:/Academia/Semester%206/Advanced%20DBMS/Project/log-management-analytics-system/sql/schema/01_create_materialized_views.sql)
 - [sql/schema/02_refresh_materialized_views.sql](/D:/Academia/Semester%206/Advanced%20DBMS/Project/log-management-analytics-system/sql/schema/02_refresh_materialized_views.sql)
 
+- [sql/schema/01_create_materialized_views.sql](../../sql/schema/01_create_materialized_views.sql)
+- [sql/schema/02_refresh_materialized_views.sql](../../sql/schema/02_refresh_materialized_views.sql)
+
 Benchmark queries for the materialized views were added in:
 
 - [sql/benchmarks/materialized_views/01_service_activity_from_mv.sql](/D:/Academia/Semester%206/Advanced%20DBMS/Project/log-management-analytics-system/sql/benchmarks/materialized_views/01_service_activity_from_mv.sql)
@@ -47,9 +50,33 @@ Materialized views store these grouped results in advance. When the analytics qu
 
 After new logs are inserted, the views are updated using:
 
-```powershell
-psql -h localhost -U postgres -d log_management -f sql/schema/02_refresh_materialized_views.sql
+```bash
+# Refresh all materialized views (example):
+psql -h localhost -U log_user -d log_management -f sql/schema/02_refresh_materialized_views.sql
 ```
+
+## Example (create + refresh)
+
+Create an example materialized view for daily service activity:
+
+```sql
+CREATE MATERIALIZED VIEW mv_daily_service_activity AS
+SELECT date_trunc('day', created_at) AS day,
+       service_id,
+       COUNT(*) AS total_requests,
+       SUM(CASE WHEN log_level_id IN (4,5) THEN 1 ELSE 0 END) AS error_count,
+       AVG(response_time_ms) AS avg_response_time
+FROM logs
+GROUP BY 1, service_id;
+```
+
+To refresh (concurrently when supported):
+
+```sql
+REFRESH MATERIALIZED VIEW CONCURRENTLY mv_daily_service_activity;
+```
+
+Note: `CONCURRENTLY` requires a unique index on the materialized view and is not supported inside a transaction block.
 
 ## Performance Improvement
 
