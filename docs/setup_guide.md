@@ -15,6 +15,11 @@ GRANT ALL PRIVILEGES ON DATABASE log_management TO log_user;
 
 4. Copy `.env.example` to `.env` and set your database credentials before running the generator.
 
+Note: there are two example env files:
+
+- `.env.example` at the repository root — used by scripts and generators.
+- `backend/.env.example` — used by the Flask backend. Copy the appropriate file to `.env` or `backend/.env`.
+
 ## pgAdmin setup
 
 1. Install pgAdmin if you prefer a GUI.
@@ -23,11 +28,20 @@ GRANT ALL PRIVILEGES ON DATABASE log_management TO log_user;
 
 ## venv setup (Python)
 
-From the project root on Windows PowerShell:
+From the project root — Windows and POSIX examples:
 
+# Windows (PowerShell)
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+# macOS / Linux (bash)
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
@@ -40,24 +54,34 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 
 ## Running scripts
 
-1. Ensure the DB is created and apply the master schema file first:
+1. Ensure the DB is created and apply the master schema file first. Use the database role you created (example `log_user`):
+
+Windows PowerShell:
 
 ```powershell
-psql -h localhost -U postgres -d log_management -f sql/schema/00_create_all_tables.sql
+psql -h localhost -U log_user -d log_management -f sql/schema/00_create_all_tables.sql
+```
+
+macOS / Linux:
+
+```bash
+PGPASSWORD="your_password" psql -h localhost -U log_user -d log_management -f sql/schema/00_create_all_tables.sql
 ```
 
 2. Seed reference tables with the master seed file:
 
+Windows PowerShell:
+
 ```powershell
-psql -h localhost -U postgres -d log_management -f sql/seed/00_seed_all.sql
+psql -h localhost -U log_user -d log_management -f sql/seed/00_seed_all.sql
 
 # Or run individual seed files (if you prefer explicit ordering):
-psql -h localhost -U postgres -d log_management -f sql/seed/seed_users.sql
-psql -h localhost -U postgres -d log_management -f sql/seed/seed_services.sql
-psql -h localhost -U postgres -d log_management -f sql/seed/seed_servers.sql
-psql -h localhost -U postgres -d log_management -f sql/seed/seed_log_levels.sql
-psql -h localhost -U postgres -d log_management -f sql/seed/seed_error_categories.sql
-psql -h localhost -U postgres -d log_management -f sql/seed/seed_api_endpoints.sql
+psql -h localhost -U log_user -d log_management -f sql/seed/seed_users.sql
+psql -h localhost -U log_user -d log_management -f sql/seed/seed_services.sql
+psql -h localhost -U log_user -d log_management -f sql/seed/seed_servers.sql
+psql -h localhost -U log_user -d log_management -f sql/seed/seed_log_levels.sql
+psql -h localhost -U log_user -d log_management -f sql/seed/seed_error_categories.sql
+psql -h localhost -U log_user -d log_management -f sql/seed/seed_api_endpoints.sql
 ```
 
 3. Generate logs from the project root, with venv activated:
@@ -84,16 +108,23 @@ python scripts/simulate_live_logs.py
 5. Create the materialized views for dashboard-style analytics:
 
 ```powershell
-psql -h localhost -U postgres -d log_management -f sql/schema/01_create_materialized_views.sql
+psql -h localhost -U log_user -d log_management -f sql/schema/01_create_materialized_views.sql
 ```
 
 6. After loading more logs later, refresh the summaries:
 
 ```powershell
-psql -h localhost -U postgres -d log_management -f sql/schema/02_refresh_materialized_views.sql
+psql -h localhost -U log_user -d log_management -f sql/schema/02_refresh_materialized_views.sql
 ```
 
 7. If you run into Python module errors, ensure the virtualenv is activated and packages from `requirements.txt` are installed.
+
+## Troubleshooting
+
+- `psql: FATAL: password authentication failed for user "log_user"`: verify the password in your `.env` or use `PGPASSWORD` for the command.
+- `cannot connect to server: Connection refused`: ensure PostgreSQL server is running and listening on the expected port (default 5432).
+- Virtualenv activation blocked on Windows PowerShell: run `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned` as admin.
+- If `psql` not found: ensure PostgreSQL bin directory is in your `PATH` or use the full path to `psql`.
 
 ## Applying Partitioning
 

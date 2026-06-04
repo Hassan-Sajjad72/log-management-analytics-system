@@ -33,6 +33,33 @@ The project addresses the difficulty of managing high-volume logs that grow quic
 - pgAdmin
 - VS Code
 
+## Requirements
+
+- Python 3.10+ (3.11 recommended)
+- PostgreSQL 13+
+- Recommended: pgAdmin for GUI management
+
+## Quick Start (minimum steps)
+
+1. Create a PostgreSQL database and a database user (see `docs/setup_guide.md`).
+2. Apply the base schema and seed reference data (psql or pgAdmin).
+3. Start the backend and open the dashboard:
+
+```bash
+cd backend
+python -m venv .venv
+.venv\Scripts\activate    # PowerShell/Windows
+pip install -r requirements.txt
+python app.py
+```
+
+4. (Optional) In a second terminal, run the log generator to populate demo data:
+
+```bash
+python scripts/generate_logs.py
+```
+
+See `docs/setup_guide.md` for full cross-platform commands and environment setup.
 ## Folder Structure
 
 - `scripts/` - log generation script
@@ -114,8 +141,15 @@ The project includes a Flask backend dashboard for viewing logs and analytics.
 
 ```bash
 cd backend
-python -m venv venv
-venv\Scripts\activate
+# Windows (PowerShell)
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python app.py
+
+# macOS / Linux
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 python app.py
 ```
@@ -134,6 +168,9 @@ Optional environment variables:
 - `LIVE_INTERVAL_SECONDS` - delay between batches, default `2`
 - `LIVE_MAX_BATCHES` - stop after this many batches, default `0` for continuous mode
 
+Notes:
+- There are two example env files: `.env.example` in the repository root (used by CLI generators and scripts) and `backend/.env.example` (used by the Flask backend). Copy the relevant file to `.env` or `backend/.env` and populate values before running the backend or generators.
+- Use `PGPASSWORD` or a `.pgpass` file to avoid being prompted for the DB password when running `psql` commands.
 ## Current Status
 
 The project is in final demo/prototype phase. The PostgreSQL schema, seed data, synthetic log generator, advanced database techniques, benchmark queries, Flask dashboard, JSON APIs, screenshots, and supporting documentation are in place.

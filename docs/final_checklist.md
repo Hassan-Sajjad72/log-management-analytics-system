@@ -32,3 +32,13 @@
 - [x] API testing documented
 - [x] Screenshots added
 - [x] Architecture documented
+
+## Demo Readiness (recommended)
+
+- [ ] Database accessible at configured host/port and `log_user` credentials tested
+- [ ] Materialized views refreshed (run `sql/schema/02_refresh_materialized_views.sql`)
+- [ ] Sample data present (run `scripts/generate_logs.py` or confirm seed data)
+- [ ] Backend running and reachable at `http://127.0.0.1:5000`
+- [ ] Live log simulator started (if demonstrating streaming inserts)
+- [ ] API health endpoint returns OK (`/api/health`)
+- [ ] Browser pages: `/`, `/logs`, `/analytics`, `/analytics/olap`, `/benchmarks` load without errors

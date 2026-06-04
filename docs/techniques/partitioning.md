@@ -50,6 +50,29 @@ How to confirm in `EXPLAIN` output:
 
 Use [sql/benchmarks/partitioning/01_partition_pruning_check.sql](../../sql/benchmarks/partitioning/01_partition_pruning_check.sql) to verify pruning behavior.
 
+## Example (create parent + monthly partition)
+
+Create a partitioned `logs` parent and a monthly partition example:
+
+```sql
+-- parent table (simplified example)
+CREATE TABLE logs (
+	log_id BIGINT,
+	created_at TIMESTAMPTZ NOT NULL,
+	service_id INT,
+	log_level_id INT,
+	message TEXT,
+	response_time_ms INT,
+	PRIMARY KEY (log_id, created_at)
+) PARTITION BY RANGE (created_at);
+
+-- monthly partition for May 2026
+CREATE TABLE logs_2026_05 PARTITION OF logs
+	FOR VALUES FROM ('2026-05-01') TO ('2026-06-01');
+```
+
+To verify pruning, run `EXPLAIN (ANALYZE, BUFFERS)` on a query that filters by `created_at` and look for the planner to indicate how many partitions were considered.
+
 ## Performance Improvement
 
 The largest gains are typically seen in queries that are tightly scoped to a single month (or short time range), because pruning avoids scanning irrelevant partitions.
