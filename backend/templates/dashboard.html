@@ -79,6 +79,8 @@ WHERE created_at >= '2026-04-01' AND created_at < '2026-05-01'
             <div class="benchmark-body">
                 <div class="execution-time" id="unpart-time">-- ms</div>
                 <div class="benchmark-status" id="unpart-status">Waiting...</div>
+                <div style="font-size: 11px; font-weight: 600; color: #555; margin-top: 16px; text-transform: uppercase;">Query Plan</div>
+                <pre id="unpart-plan" style="width: 100%; margin-top: 4px; max-height: 250px; overflow: auto; background: #fff; padding: 12px; border-radius: 4px; border: 1px solid #ccc; color: #000; font-size: 11px; text-align: left; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);">Run a benchmark to see the EXPLAIN JSON here.</pre>
             </div>
         </div>
         <div class="benchmark-window" id="part-window">
@@ -86,6 +88,8 @@ WHERE created_at >= '2026-04-01' AND created_at < '2026-05-01'
             <div class="benchmark-body">
                 <div class="execution-time" id="part-time">-- ms</div>
                 <div class="benchmark-status" id="part-status">Waiting...</div>
+                <div style="font-size: 11px; font-weight: 600; color: #047857; margin-top: 16px; text-transform: uppercase;">Query Plan (Proof of Pruning!)</div>
+                <pre id="part-plan" style="width: 100%; margin-top: 4px; max-height: 250px; overflow: auto; background: #fff; padding: 12px; border-radius: 4px; border: 1px solid #ccc; color: #000; font-size: 11px; text-align: left; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);">Run a benchmark to see the EXPLAIN JSON here.</pre>
             </div>
         </div>
     </div>
@@ -332,7 +336,7 @@ document.addEventListener('DOMContentLoaded', function(){
         }
     });
 
-    var runBenchmarkBtn = document.getElementById('run-custom-benchmark');
+            var runBenchmarkBtn = document.getElementById('run-custom-benchmark');
     var sqlInput = document.getElementById('custom-sql-input');
     var unpartTime = document.getElementById('unpart-time');
     var partTime = document.getElementById('part-time');
@@ -341,6 +345,8 @@ document.addEventListener('DOMContentLoaded', function(){
     var benchmarkError = document.getElementById('benchmark-error');
     var unpartWindow = document.getElementById('unpart-window');
     var partWindow = document.getElementById('part-window');
+    var unpartPlan = document.getElementById('unpart-plan');
+    var partPlan = document.getElementById('part-plan');
 
     if(runBenchmarkBtn) {
         runBenchmarkBtn.addEventListener('click', async function() {
@@ -354,6 +360,8 @@ document.addEventListener('DOMContentLoaded', function(){
             partTime.textContent = '-- ms';
             unpartStatus.textContent = 'Executing...';
             partStatus.textContent = 'Executing...';
+            unpartPlan.textContent = '';
+            partPlan.textContent = '';
             unpartWindow.classList.remove('winner');
             partWindow.classList.remove('winner');
 
@@ -374,6 +382,20 @@ document.addEventListener('DOMContentLoaded', function(){
                 partTime.textContent = result.partitioned_ms.toFixed(2) + ' ms';
                 unpartStatus.textContent = 'Done';
                 partStatus.textContent = 'Done';
+                
+                if (result.unpartitioned_plan) {
+                    unpartPlan.textContent = JSON.stringify(result.unpartitioned_plan, null, 2);
+                } else {
+                    unpartPlan.textContent = "Error: Backend didn't return the plan. Please restart your Flask server!";
+                    unpartPlan.style.color = "red";
+                }
+                
+                if (result.partitioned_plan) {
+                    partPlan.textContent = JSON.stringify(result.partitioned_plan, null, 2);
+                } else {
+                    partPlan.textContent = "Error: Backend didn't return the plan. Please restart your Flask server!";
+                    partPlan.style.color = "red";
+                }
 
                 if (result.partitioned_ms < result.unpartitioned_ms) {
                     partWindow.classList.add('winner');

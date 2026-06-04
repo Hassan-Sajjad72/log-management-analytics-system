@@ -421,6 +421,8 @@ def api_benchmarks_custom_query():
         return jsonify({
             "unpartitioned_ms": unpart_time,
             "partitioned_ms": part_time,
+            "unpartitioned_plan": unpart_plan,
+            "partitioned_plan": part_plan,
             "query": user_query
         })
     except Exception as e:
