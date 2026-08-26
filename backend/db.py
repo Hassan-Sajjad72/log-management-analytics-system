@@ -1,12 +1,15 @@
 # create DB connection
 
 import os
+from pathlib import Path
+
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
 from flask import session, has_request_context
 
-load_dotenv()
+ENV_FILE = Path(__file__).resolve().parent / ".env"
+load_dotenv(ENV_FILE)
 
 def get_connection():
     return psycopg2.connect(

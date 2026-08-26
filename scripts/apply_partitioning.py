@@ -1,9 +1,12 @@
 import os
 import sys
+from pathlib import Path
+
 import psycopg2
 from dotenv import load_dotenv
 
-load_dotenv()
+ENV_FILE = Path(__file__).resolve().parents[1] / "backend" / ".env"
+load_dotenv(ENV_FILE)
 
 def get_connection():
     return psycopg2.connect(

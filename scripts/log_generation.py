@@ -2,13 +2,15 @@ import os
 import random
 import uuid
 from datetime import datetime, timezone
+from pathlib import Path
 
 import psycopg2
 from dotenv import load_dotenv
 from faker import Faker
 from psycopg2.extras import execute_batch
 
-load_dotenv()
+ENV_FILE = Path(__file__).resolve().parents[1] / "backend" / ".env"
+load_dotenv(ENV_FILE)
 
 fake = Faker()
 

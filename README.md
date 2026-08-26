@@ -43,7 +43,8 @@ The project addresses the difficulty of managing high-volume logs that grow quic
 
 1. Create a PostgreSQL database and a database user (see `docs/setup_guide.md`).
 2. Apply the base schema and seed reference data (psql or pgAdmin).
-3. Start the backend and open the dashboard:
+3. Copy `.env.example` to `backend/.env` and replace the placeholder values.
+4. Start the backend and open the dashboard:
 
 ```bash
 cd backend
@@ -53,7 +54,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-4. (Optional) In a second terminal, run the log generator to populate demo data:
+5. (Optional) In a second terminal, run the log generator to populate demo data:
 
 ```bash
 python scripts/generate_logs.py
@@ -169,7 +170,7 @@ Optional environment variables:
 - `LIVE_MAX_BATCHES` - stop after this many batches, default `0` for continuous mode
 
 Notes:
-- There are two example env files: `.env.example` in the repository root (used by CLI generators and scripts) and `backend/.env.example` (used by the Flask backend). Copy the relevant file to `.env` or `backend/.env` and populate values before running the backend or generators.
+- `.env.example` is the single environment template. Copy it to `backend/.env` and populate the values. The Flask backend, generators, live simulator, and partitioning script all load `backend/.env`.
 - Use `PGPASSWORD` or a `.pgpass` file to avoid being prompted for the DB password when running `psql` commands.
 ## Current Status
 
