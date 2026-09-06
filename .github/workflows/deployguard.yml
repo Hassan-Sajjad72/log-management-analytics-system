@@ -1,0 +1,46 @@
+name: DeployGuard
+run-name: DeployGuard ${{ inputs.deployment_operation_id }}
+on:
+  workflow_dispatch:
+    inputs:
+      deployment_action: { required: true, type: string }
+      deployment_operation_id: { required: true, type: string }
+      project_id: { required: true, type: string }
+      environment_name: { required: true, type: string }
+      repository_full_name: { required: true, type: string }
+      repository_branch: { required: true, type: string }
+      commit_sha: { required: true, type: string }
+      services_base64: { required: true, type: string }
+      infrastructure_namespace: { required: true, type: string }
+      aws_region: { required: true, type: string }
+      aws_role_arn: { required: true, type: string }
+      vpc_id: { required: true, type: string }
+      public_subnet_ids: { required: true, type: string }
+      terraform_state_bucket: { required: true, type: string }
+      control_plane_sha: { required: true, type: string }
+      result_contract_version: { required: true, type: string }
+      release_only: { required: true, type: string }
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  deploy:
+    uses: Hassan-Sajjad72/Deploy-Guard-dev/.github/workflows/deployguard-reusable.yml@8f539fd87bea98487938143fb33c5a110161d405
+    with:
+      deployment_action: ${{ inputs.deployment_action }}
+      deployment_operation_id: ${{ inputs.deployment_operation_id }}
+      project_id: ${{ inputs.project_id }}
+      environment_name: ${{ inputs.environment_name }}
+      repository_full_name: ${{ inputs.repository_full_name }}
+      repository_branch: ${{ inputs.repository_branch }}
+      commit_sha: ${{ inputs.commit_sha }}
+      services_base64: ${{ inputs.services_base64 }}
+      infrastructure_namespace: ${{ inputs.infrastructure_namespace }}
+      aws_region: ${{ inputs.aws_region }}
+      aws_role_arn: ${{ inputs.aws_role_arn }}
+      vpc_id: ${{ inputs.vpc_id }}
+      public_subnet_ids: ${{ inputs.public_subnet_ids }}
+      terraform_state_bucket: ${{ inputs.terraform_state_bucket }}
+      control_plane_sha: ${{ inputs.control_plane_sha }}
+      result_contract_version: ${{ inputs.result_contract_version }}
+      release_only: ${{ inputs.release_only }}
