@@ -20,12 +20,14 @@ on:
       control_plane_sha: { required: true, type: string }
       result_contract_version: { required: true, type: string }
       release_only: { required: true, type: string }
+      trivy_enabled: { required: true, type: string }
+      trivy_enforce: { required: true, type: string }
 permissions:
   contents: read
   id-token: write
 jobs:
   deploy:
-    uses: Hassan-Sajjad72/Deploy-Guard-dev/.github/workflows/deployguard-reusable.yml@23292cc4e0cedaf35c5b62f5f3dfbd8b0c6db37b
+    uses: Hassan-Sajjad72/Deploy-Guard-dev/.github/workflows/deployguard-reusable.yml@ce6a456ba7374d3e983cd8d84f3dbc6ea7d4623e
     with:
       deployment_action: ${{ inputs.deployment_action }}
       deployment_operation_id: ${{ inputs.deployment_operation_id }}
@@ -44,3 +46,5 @@ jobs:
       control_plane_sha: ${{ inputs.control_plane_sha }}
       result_contract_version: ${{ inputs.result_contract_version }}
       release_only: ${{ inputs.release_only }}
+      trivy_enabled: ${{ inputs.trivy_enabled }}
+      trivy_enforce: ${{ inputs.trivy_enforce }}
